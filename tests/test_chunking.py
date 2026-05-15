@@ -6,7 +6,7 @@ from models.prehypo.graphrag import GraphRAG
 @pytest.mark.asyncio
 async def test_adaptive_semantic_chunking_audit():
     # Setup
-    rag = GraphRAG(strategy="hyporeflect")
+    rag = GraphRAG(strategy="prehypo")
     
     # Mock VLLMClient and Embedding logic
     rag.vllm = MagicMock()

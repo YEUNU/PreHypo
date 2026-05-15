@@ -12,7 +12,7 @@ from models.prehypo.graphrag import GraphRAG
 @pytest.mark.asyncio
 async def test_rolling_summarization_audit():
     # Setup
-    rag = GraphRAG(strategy="hyporeflect")
+    rag = GraphRAG(strategy="prehypo")
     rag.indexing_llm = AsyncMock()
     rag.indexing_llm.generate_response = AsyncMock(return_value="Mock page/group summary")
     rag.vllm = MagicMock()

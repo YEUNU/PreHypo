@@ -68,7 +68,7 @@ async def run_indexing(
         )
         return
 
-    if strategy == "hyporeflect":
+    if strategy == "prehypo":
         engine = GraphRAG(
             strategy=strategy,
             indexing_model_id=model_id,

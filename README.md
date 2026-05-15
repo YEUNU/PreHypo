@@ -77,19 +77,21 @@ prehypo/
 ## Installation
 
 ```bash
-# Python 3.11 recommended; see .python-version
-pip install -r requirements.txt
+# Python 3.12+ recommended; see .python-version
+pip install -e .         # installs vllm, torch, transformers, neo4j, ... per pyproject.toml
 # or
-uv pip install -r requirements.txt
+uv pip install -e .
 
 # Neo4j 5.x — Docker is simplest:
 docker run -d --name prehypo-neo4j -p 7474:7474 -p 7687:7687 \
   -e NEO4J_AUTH=neo4j/<your_password> neo4j:5
 
 # Configure env vars
-cp .env.example .env   # if provided; otherwise create one
+cp .env.example .env
 # Required: NEO4J_PASSWORD, OPENAI_API_KEY (for the LLM judge)
 ```
+
+`requirements.txt` covers only the runtime client (Neo4j driver, OpenAI client, pytest); `pyproject.toml` is the canonical dependency list and includes the vLLM / Torch / transformers stack needed by `run_servers.sh` to serve the local generation, embedding, and reranker models.
 
 vLLM servers are launched by `run_servers.sh` (separate processes for generation, embeddings, and reranker; ports listed in `scripts/probe_ports.py`).
 
@@ -98,8 +100,9 @@ vLLM servers are launched by `run_servers.sh` (separate processes for generation
 ## Quick start
 
 ```bash
-# 0) Download FinanceBench (questions + document metadata + SEC PDFs)
-python3 data/prepare_financebench.py
+# 0) Download FinanceBench (questions + document metadata + SEC PDFs).
+#    Use --download-pdfs to fetch the 150 source PDFs into data/finance_pdfs/.
+python3 data/prepare_financebench.py --download-pdfs
 # Produces:
 #   data/financebench_open_source.jsonl
 #   data/financebench_document_information.jsonl

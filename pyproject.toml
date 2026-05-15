@@ -1,7 +1,7 @@
 [project]
-name = "hyporeflect"
+name = "prehypo"
 version = "0.1.0"
-description = "Advanced RAG with HypoReflect"
+description = "Pre-built hypothetical-query graphs for page-grounded financial QA"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

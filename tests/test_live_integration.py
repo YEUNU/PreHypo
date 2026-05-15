@@ -178,7 +178,7 @@ async def test_live_graphrag_index_retrieve_roundtrip():
 
     corpus_tag = "it_live_graph"
     unique_token = "graphrag_live_unique_token_77403"
-    rag = GraphRAG(strategy="hyporeflect", corpus_tag=corpus_tag)
+    rag = GraphRAG(strategy="prehypo", corpus_tag=corpus_tag)
 
     async def cleanup() -> None:
         await rag.neo4j.execute_query(

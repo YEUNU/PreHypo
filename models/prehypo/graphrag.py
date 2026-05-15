@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 class GraphRAG(IndexingPipeline, RetrievalPipeline):
     def __init__(
         self,
-        strategy: str = "hyporeflect",
+        strategy: str = "prehypo",
         indexing_model_id: Optional[str] = None,
         corpus_tag: Optional[str] = None,
         save_intermediate: bool = False,
