@@ -1,0 +1,35 @@
+[project]
+name = "hyporeflect"
+version = "0.1.0"
+description = "Advanced RAG with HypoReflect"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "vllm>=0.15.0",
+    "uvicorn",
+    "fastapi",
+    "sentence-transformers",
+    "torch",
+    "transformers",
+    "accelerate",
+    "neo4j",
+    "openai",
+    "numpy",
+    "typing_extensions>=4.13.0",
+    "httpx",
+    "pydantic",
+    "pydantic-settings",
+    "loguru",
+    "python-dotenv",
+    "matplotlib",
+    "tqdm",
+    "requests",
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+# E402: main.py needs sys.path.append before local imports
+# F403: utils/prompts/__init__.py uses wildcard re-export by design
+per-file-ignores = { "main.py" = ["E402"], "utils/prompts/__init__.py" = ["F403"] }
