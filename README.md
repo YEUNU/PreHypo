@@ -98,16 +98,27 @@ vLLM servers are launched by `run_servers.sh` (separate processes for generation
 ## Quick start
 
 ```bash
-# 1) Start services
+# 0) Download FinanceBench (questions + document metadata + SEC PDFs)
+python3 data/prepare_financebench.py
+# Produces:
+#   data/financebench_open_source.jsonl
+#   data/financebench_document_information.jsonl
+#   data/financebench_queries.json
+#   data/finance_pdfs/*.pdf
+
+# 1) Start services (Neo4j + vLLM gen / embed / rerank / ocr)
 ./run_servers.sh all
 
-# 2) Index FinanceBench under the PreHypo strategy
+# 2) OCR the PDFs into a Markdown corpus
+./run_ocr.sh --convert_tables
+
+# 3) Build the PreHypo index
 ./run_index.sh --model prehypo --corpus-tag prehypo_full
 
-# 3) Benchmark
+# 4) Benchmark
 ./run_benchmark.sh --model prehypo --corpus-tag prehypo_full
 
-# 4) Stop services
+# 5) Stop services
 ./stop_servers.sh all
 ```
 

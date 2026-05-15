@@ -7,17 +7,17 @@
 #   1. naive_full              — naive baseline
 #   2. hoprag_full             — official HopRAG indexer
 #   3. ms_graphrag_full        — official MS GraphRAG (parquet outputs)
-#   4. hyporeflect_full        — HypoReflect full pipeline
-#   5. hyporeflect_no_table    — HypoReflect ablation: no table-to-text
-#   6. hyporeflect_no_chunk    — HypoReflect ablation: no adaptive chunking
-#   7. hyporeflect_no_summary  — HypoReflect ablation: no rolling summary
+#   4. prehypo_full            — PreHypo full pipeline
+#   5. prehypo_no_table        — PreHypo ablation: no table-to-text
+#   6. prehypo_no_chunk        — PreHypo ablation: no adaptive chunking
+#   7. prehypo_no_summary      — PreHypo ablation: no rolling summary
 #
 # Why no baseline ablations: RAG_ABLATION_TABLE/CHUNKING/SUMMARY are read only
-# by HypoReflect (`models/hyporeflect/indexing/chunking.py`). The naive,
-# hoprag, and ms_graphrag pipelines run their published code verbatim and
-# ignore those flags — running them with `_no_*` corpus tags would produce
-# indexes byte-identical to the `_full` variant. Paper Table 1 reports
-# ablations on HypoReflect only.
+# by PreHypo (`models/prehypo/indexing/chunking.py`). The naive, hoprag, and
+# ms_graphrag pipelines run their published code verbatim and ignore those
+# flags — running them with `_no_*` corpus tags would produce indexes
+# byte-identical to the `_full` variant. Paper Table 2 reports ablations on
+# PreHypo only.
 #
 # Concurrency notes:
 #  - All 7 are dispatched in parallel by default; vLLM gen (port 28000) and
@@ -124,11 +124,11 @@ if [ "$SKIP_BASELINES" != "true" ]; then
     run_task "ms_graphrag_full"  "./run_index.sh --model ms_graphrag  --corpus-tag ms_graphrag_full  $SAMPLE_FLAG $N_COMPANIES" &
 fi
 
-# ---------- HypoReflect family ----------
-run_task "hyporeflect_full"        "./run_index.sh --model hyporeflect --corpus-tag hyporeflect_full        $SAMPLE_FLAG $N_COMPANIES" &
-run_task "hyporeflect_no_table"    "RAG_ABLATION_TABLE=False    ./run_index.sh --model hyporeflect --corpus-tag hyporeflect_no_table    $SAMPLE_FLAG $N_COMPANIES" &
-run_task "hyporeflect_no_chunk"    "RAG_ABLATION_CHUNKING=False ./run_index.sh --model hyporeflect --corpus-tag hyporeflect_no_chunk    $SAMPLE_FLAG $N_COMPANIES" &
-run_task "hyporeflect_no_summary"  "RAG_ABLATION_SUMMARY=False  ./run_index.sh --model hyporeflect --corpus-tag hyporeflect_no_summary  $SAMPLE_FLAG $N_COMPANIES" &
+# ---------- PreHypo family ----------
+run_task "prehypo_full"        "./run_index.sh --model prehypo --corpus-tag prehypo_full        $SAMPLE_FLAG $N_COMPANIES" &
+run_task "prehypo_no_table"    "RAG_ABLATION_TABLE=False    ./run_index.sh --model prehypo --corpus-tag prehypo_no_table    $SAMPLE_FLAG $N_COMPANIES" &
+run_task "prehypo_no_chunk"    "RAG_ABLATION_CHUNKING=False ./run_index.sh --model prehypo --corpus-tag prehypo_no_chunk    $SAMPLE_FLAG $N_COMPANIES" &
+run_task "prehypo_no_summary"  "RAG_ABLATION_SUMMARY=False  ./run_index.sh --model prehypo --corpus-tag prehypo_no_summary  $SAMPLE_FLAG $N_COMPANIES" &
 
 echo
 echo "Waiting for all indexing tasks to finish..."

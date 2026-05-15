@@ -103,7 +103,7 @@ start_neo4j_docker() {
         return 1
     fi
 
-    local container_name="${NEO4J_CONTAINER_NAME:-hyporeflect-neo4j}"
+    local container_name="${NEO4J_CONTAINER_NAME:-prehypo-neo4j}"
     local neo4j_user="${NEO4J_USER:-neo4j}"
     local neo4j_password="${NEO4J_PASSWORD:-1q2w3e4r}"
     local neo4j_docker_cpus="${NEO4J_DOCKER_CPUS:-12}"

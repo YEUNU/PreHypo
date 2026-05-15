@@ -6,7 +6,7 @@ if [ -n "${JAVA_HOME:-}" ]; then
 fi
 
 SERVICE="${1:-all}"
-NEO4J_CONTAINER_NAME="${NEO4J_CONTAINER_NAME:-hyporeflect-neo4j}"
+NEO4J_CONTAINER_NAME="${NEO4J_CONTAINER_NAME:-prehypo-neo4j}"
 
 resolve_neo4j_cmd() {
     if [ -n "${NEO4J_BIN:-}" ] && [ -x "${NEO4J_BIN}" ]; then

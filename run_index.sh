@@ -24,7 +24,7 @@ cd "$SCRIPT_DIR"
 . "$SCRIPT_DIR/scripts/lib.sh"
 
 # Default values
-MODEL="hyporeflect"
+MODEL="prehypo"
 LLM="local"
 DATASET=""
 N_COMPANIES=""
@@ -108,7 +108,7 @@ echo "[Step] Running indexing..."
 
 if [ "$MODEL" = "all" ]; then
     echo "🚀 Running ALL models in parallel..."
-    MODELS=("hyporeflect" "hoprag" "naive" "ms_graphrag")
+    MODELS=("prehypo" "hoprag" "naive" "ms_graphrag")
     PIDS=()
     
     for m in "${MODELS[@]}"; do

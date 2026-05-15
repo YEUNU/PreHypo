@@ -32,14 +32,13 @@ fi
 
 # Default values
 QUERIES_FILE="data/financebench_queries.json"
-MODEL="hyporeflect"
+MODEL="prehypo"
 LLM="local"
 N_COMPANIES=""
 RUN_ALL=false
 SAMPLE=""
 OCR=""
 CORPUS_TAG=""
-AGENTIC=""
 
 # Parse arguments
 while [ $# -gt 0 ]; do
@@ -52,7 +51,6 @@ while [ $# -gt 0 ]; do
         --sample) SAMPLE="--sample"; shift 1 ;;
         --ocr) OCR="--ocr"; shift 1 ;;
         --corpus-tag) CORPUS_TAG="--corpus-tag $2"; shift 2 ;;
-        --agentic) AGENTIC="--agentic $2"; shift 2 ;;
         *) echo "Unknown option: $1"; exit 1 ;;
     esac
 done
@@ -62,9 +60,6 @@ echo "     Benchmark Pre-flight Check          "
 echo "========================================="
 echo "Python: $PYTHON_BIN"
 echo "Retrieval Tune: analyzer=${NEO4J_FULLTEXT_ANALYZER}, rewrite=${RAG_ENABLE_QUERY_REWRITE} (count=${RAG_QUERY_REWRITE_COUNT})"
-if [ -n "$AGENTIC" ]; then
-    echo "Agentic mode: ${AGENTIC#--agentic }"
-fi
 
 echo "Step 0: Python/Dependency preflight..."
 if [ "$MODEL" = "hoprag" ] || [ "$MODEL" = "ms_graphrag" ] || [ "$RUN_ALL" = true ]; then
@@ -107,9 +102,9 @@ if ! wait_for_server "http://localhost:18083/health" "Reranker Model"; then exit
 echo ""
 echo "[Step] Running benchmark..."
 if [ "$RUN_ALL" = true ]; then
-    "$PYTHON_BIN" main.py --mode benchmark_all --queries_file "$QUERIES_FILE" --model "$LLM" $N_COMPANIES $SAMPLE $OCR $CORPUS_TAG $AGENTIC
+    "$PYTHON_BIN" main.py --mode benchmark_all --queries_file "$QUERIES_FILE" --model "$LLM" $N_COMPANIES $SAMPLE $OCR $CORPUS_TAG
 else
-    "$PYTHON_BIN" main.py --mode benchmark --queries_file "$QUERIES_FILE" --strategy "$MODEL" --model "$LLM" $N_COMPANIES $SAMPLE $OCR $CORPUS_TAG $AGENTIC
+    "$PYTHON_BIN" main.py --mode benchmark --queries_file "$QUERIES_FILE" --strategy "$MODEL" --model "$LLM" $N_COMPANIES $SAMPLE $OCR $CORPUS_TAG
 fi
 
 # [3] Generate human-readable run reports
