@@ -189,7 +189,7 @@ RUN_DIR="data/results/$RAG_BENCHMARK_TIMESTAMP"
 if [ -d "$RUN_DIR" ]; then
     echo
     echo "[Step] Generating run report for $RUN_DIR ..."
-    "$PYTHON_BIN" tools/benchmark_report.py generate --run-dir "$RUN_DIR" --coverage-profile parallel_all || true
+    "$PYTHON_BIN" tools/benchmark_report.py generate --run-dir "$RUN_DIR" || true
 fi
 
 if [ -s "$FAIL_MARKER" ]; then
