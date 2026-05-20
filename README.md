@@ -1,4 +1,4 @@
-# PreHypo: Pre-Built Hypothetical-Query Graphs for Page-Grounded Financial QA
+# PreHypo: Indexing-Time Structure Preservation for Page-Grounded Financial QA
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -11,7 +11,7 @@ Reference implementation of **PreHypo**, a GraphRAG framework whose entire advan
 Four indexing-time designs, evaluated on [FinanceBench](https://github.com/patronus-ai/financebench):
 
 1. **Topology-Preserving VLM OCR** — financial tables rendered as Markdown so row-column structure survives into the LLM context.
-2. **Adaptive Context-Aware Chunking** — page-cluster boundaries respected, with a rolling header (anchor + milestone summary + prev-chunk summary) attached to each chunk embedding.
+2. **Adaptive Context-Aware Chunking** — page-cluster boundaries respected, with a rolling header (anchor + milestone summaries + prev-group summary) attached to each chunk embedding.
 3. **Predictive Knowledge Mapping** — every chunk receives dual hypothetical-query annotations ($Q^-$ for self-contained facts, $Q^+$ for outgoing dependencies), indexed separately.
 4. **Rank-Based HOP Edges Pre-Built Offline** — chunk-to-chunk semantic edges are computed once via a cross-encoder reranker; the query path never expands the graph.
 
@@ -21,14 +21,16 @@ The query path is deliberately thin: two-stage hybrid retrieve (Q⁻/body, then 
 
 ## Main Results (FinanceBench, n=150, 5-fold mean ± std)
 
-| System | Judge ↑ | Halluc ↓ | DocM ↑ | **PgM ↑** | Att | Lat (s) |
-|---|---|---|---|---|---|---|
-| **PreHypo (ours)** | **0.32 ± 0.13** | **0.14 ± 0.08** | **0.99 ± 0.02** | **0.20 ± 0.04** | 0.51 ± 0.13 | 28.0 |
-| MS-GraphRAG | 0.19 ± 0.10 | 0.32 ± 0.05 | 0.95 ± 0.05 | 0.03 ± 0.04 | 0.80 ± 0.08 | 26.4 |
-| HopRAG | 0.19 ± 0.05 | 0.13 ± 0.06 | 0.99 ± 0.02 | 0.04 ± 0.04 | 0.50 ± 0.11 | 163.2 |
-| Naive | 0.05 ± 0.04 | 0.04 ± 0.04 | 0.89 ± 0.03 | 0.00 ± 0.00 | 0.59 ± 0.08 | 2.1 |
+| System | Judge ↑ | J\|Att ↑ | Halluc ↓ | H\|Att ↓ | **PgM ↑** | Att | Lat (s) |
+|---|---|---|---|---|---|---|---|
+| **PreHypo (ours)** | **0.32 ± 0.11** | **0.57 ± 0.09** | 0.17 ± 0.04 | 0.31 ± 0.08 | **0.19 ± 0.07** | 0.55 ± 0.10 | 6.81 |
+| MS-GraphRAG | 0.19 ± 0.10 | 0.23 ± 0.10 | 0.32 ± 0.05 | 0.40 ± 0.11 | 0.03 ± 0.04 | 0.80 ± 0.08 | 26.4 |
+| HopRAG | 0.19 ± 0.05 | 0.39 ± 0.05 | 0.13 ± 0.06 | 0.26 ± 0.04 | 0.04 ± 0.04 | 0.50 ± 0.11 | 163.2 |
+| Naive | 0.05 ± 0.04 | 0.10 ± 0.05 | 0.04 ± 0.04 | 0.06 ± 0.04 | 0.00 ± 0.00 | 0.59 ± 0.08 | 2.1 |
 
-Generator: Qwen3-4B-Instruct-2507 across every system. The defensible win is **PgM 0.20 — roughly 5× the best baseline**, and that gap is the only one that exceeds fold variance against every pair. Judge and Hallucination gaps are reported jointly with per-fold detail in the paper.
+`J|Att` / `H|Att` are conditional metrics over attempted queries (substantive response, not abstention). DocM (gold document in retrieved set) is ≥ 0.89 for all four systems — PreHypo/HopRAG 0.99, MS-GraphRAG 0.95, Naive 0.89 — and is omitted from the table.
+
+Generator: Qwen3-4B-Instruct-2507 across every system. The defensible win is **PgM 0.19 — the largest gap relative to fold variance (vs. ≤ 0.04 for every baseline)**; the absolute level is low, since most correct answers are synthesized across sibling pages rather than from the single gold page. The Judge gap (13pp) overlaps with baselines per fold but is resolved under query-level paired bootstrap with Bonferroni correction (all three baseline pairings above zero). Naive's nominally low Halluc reflects an answered set of which only ~10% are correct, not faithfulness.
 
 ---
 
@@ -161,12 +163,12 @@ Full list in the paper appendix; the most important:
 |---|---|---|
 | `τ_page` | 0.5 | adaptive chunking (page-cluster threshold) |
 | `τ_chunk` | 0.65 | adaptive chunking (sentence cohesion threshold) |
-| `τ_r` | 0.5 | reranker threshold (used identically in HOP build and query rerank) |
-| `L_hop` | 3 | max outgoing HOP edges per source chunk |
-| `K_hop` | 10 | HOP candidate pool per source chunk |
+| `τ_r` | 0.4 | reranker threshold (used identically in HOP build and query rerank) |
+| `L_hop` | 5 | max outgoing HOP edges per source chunk |
+| `K_hop` | 15 | HOP candidate pool per source chunk |
 | Stage 1 weights | 0.7 / 0.3 | $Q^-$ / body |
 | Stage 2 weights | 0.6 / 0.4 | $Q^+$ / $Q^-$ support |
-| RRF `k` | 60 | $w_v=1.0$, $w_t=1.2$ |
+| RRF `k` | 60 | $w_v=1.3$, $w_t=1.0$ |
 | Embedding dim | 1024 | Qwen3-Embedding-0.6B |
 
 ---
@@ -181,7 +183,7 @@ The system the paper analyzes does not include a reflective agent loop. An earli
 
 ```bibtex
 @article{prehypo2026,
-  title   = {{PreHypo}: Pre-Built Hypothetical-Query Graphs for Page-Grounded Financial QA},
+  title   = {{PreHypo}: Indexing-Time Structure Preservation for Page-Grounded Financial QA},
   author  = {Anonymous},
   year    = {2026},
   note    = {Under review}
