@@ -214,6 +214,20 @@ class RAGConfig:
     ABLATION_Q_MINUS = os.environ.get("RAG_ABLATION_Q_MINUS", "True").lower() == "true"
     ABLATION_Q_PLUS = os.environ.get("RAG_ABLATION_Q_PLUS", "True").lower() == "true"
 
+    # Direction-split ablation for the EMNLP rebuttal. Selects which Q-/Q+
+    # channels Stage 1 of retrieve.py queries and whether Stage 2 fires.
+    # Values:
+    #   "full"            -> paper default (Q- 0.7 + body 0.3, Stage 2 fires
+    #                        with Q+ 0.6 + Q- support 0.4 when needed).
+    #   "qminus_only"     -> Stage 1: Q- 1.0, no body. Stage 2 disabled.
+    #   "qplus_only"      -> Stage 1: Q+ 1.0, no body. Stage 2 disabled.
+    #   "single_combined" -> Stage 1: Q- 0.5 + Q+ 0.5 (HopRAG-style single
+    #                        hypothetical channel). Stage 2 disabled.
+    # No re-indexing required; only retrieval-time channel selection changes.
+    HYPO_CHANNEL_VARIANT = os.environ.get(
+        "RAG_HYPO_CHANNEL_VARIANT", "full"
+    ).strip().lower() or "full"
+
     # HOP construction mode: "offline" pre-builds edges at indexing time
     # (default, paper config). "runtime" skips offline HOP construction and
     # expands the frontier via Q+ ANN + cross-encoder rerank at query time.

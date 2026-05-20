@@ -68,7 +68,10 @@ async def run_indexing(
         )
         return
 
-    if strategy == "prehypo":
+    if strategy in ("prehypo", "hyporeflect"):
+        # "hyporeflect" is the legacy strategy name retained so the
+        # pre-built HY_<corpus>_* / hyporeflect_<corpus>_*_idx artefacts can
+        # be reused without re-indexing (EMNLP rebuttal ablation).
         engine = GraphRAG(
             strategy=strategy,
             indexing_model_id=model_id,

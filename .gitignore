@@ -248,3 +248,4 @@ output/
 
 # Local debug / one-off probe scripts under scripts/_test_*.py
 scripts/_test_*.py
+.env

@@ -75,7 +75,9 @@ async def run_benchmark(
         RAGConfig.LLM_SEED = int(seed)
 
     try:
-        if strategy == "prehypo":
+        if strategy in ("prehypo", "hyporeflect"):
+            # Legacy "hyporeflect" alias keeps the EMNLP-rebuttal ablation
+            # pointed at the pre-built HY_<corpus>_* labels without re-indexing.
             engine = GraphRAG(strategy=strategy, corpus_tag=corpus_tag)
         elif strategy == "naive":
             engine = NaiveRAG(strategy=strategy, corpus_tag=corpus_tag)

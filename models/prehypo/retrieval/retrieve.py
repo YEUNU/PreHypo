@@ -40,10 +40,26 @@ class RetrieveMixin:
                     merged[node_id] = item
                 merged[node_id][score_key] += weight * (1.0 / (RAGConfig.RRF_K_CONSTANT + rank))
 
+        variant = RAGConfig.HYPO_CHANNEL_VARIANT
         # --- Stage 1: grounded retrieval (Q- 0.7 + body 0.3) per paper §3.2.3 ---
         for index, query_text in enumerate(query_variants):
             query_weight = 1.0 if index == 0 else RAGConfig.QUERY_REWRITE_WEIGHT
-            if RAGConfig.ABLATION_Q_MINUS:
+            if variant == "qminus_only":
+                q_minus_nodes = await self._hybrid_rrf_candidates(query_text, limit=candidate_limit_per_query, channel="q_minus")
+                _accumulate(stage1_merged, q_minus_nodes, "stage1_rrf_score", query_weight * 1.0)
+            elif variant == "qplus_only":
+                q_plus_nodes = await self._hybrid_rrf_candidates(query_text, limit=candidate_limit_per_query, channel="q_plus")
+                _accumulate(stage1_merged, q_plus_nodes, "stage1_rrf_score", query_weight * 1.0)
+            elif variant == "single_combined":
+                # HopRAG-style single hypothetical channel: equal-weight Q-/Q+
+                # candidates fused through the same RRF accumulator, no direction
+                # distinction. Body channel excluded so the ablation isolates the
+                # direction split from the body/hypothetical balance.
+                q_minus_nodes = await self._hybrid_rrf_candidates(query_text, limit=candidate_limit_per_query, channel="q_minus")
+                q_plus_nodes = await self._hybrid_rrf_candidates(query_text, limit=candidate_limit_per_query, channel="q_plus")
+                _accumulate(stage1_merged, q_minus_nodes, "stage1_rrf_score", query_weight * 0.5)
+                _accumulate(stage1_merged, q_plus_nodes, "stage1_rrf_score", query_weight * 0.5)
+            elif RAGConfig.ABLATION_Q_MINUS:
                 q_minus_nodes = await self._hybrid_rrf_candidates(query_text, limit=candidate_limit_per_query, channel="q_minus")
                 body_nodes = await self._hybrid_rrf_candidates(query_text, limit=max(10, top_k * 4), channel="body")
                 _accumulate(stage1_merged, q_minus_nodes, "stage1_rrf_score", query_weight * 0.7)
@@ -76,6 +92,9 @@ class RetrieveMixin:
         need_expand = (len(stage1_nodes) < top_k) or (best_stage1_score < (RAGConfig.RERANKER_THRESHOLD + 0.08))
 
         if not RAGConfig.ABLATION_Q_PLUS:
+            need_expand = False
+
+        if variant in ("qminus_only", "qplus_only", "single_combined"):
             need_expand = False
 
         if not need_expand:

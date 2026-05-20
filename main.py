@@ -26,7 +26,7 @@ logger = logging.getLogger("HypoReflect")
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["index", "benchmark", "benchmark_all", "ocr"], required=True)
-    parser.add_argument("--strategy", choices=["naive", "prehypo", "hoprag", "ms_graphrag"], default="prehypo")
+    parser.add_argument("--strategy", choices=["naive", "prehypo", "hyporeflect", "hoprag", "ms_graphrag"], default="prehypo")
     parser.add_argument("--model", default="local")
     parser.add_argument("--dataset", default="data/finance_corpus")
     parser.add_argument("--queries_file", default="data/financebench_queries.json")
