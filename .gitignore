@@ -263,3 +263,4 @@ data/financebench_queries.json
 # Session-scratch orchestration scripts (hardcoded PIDs; not part of the repo).
 run_mhr_finish.sh
 run_flashinfer_switch.sh
+run_mhr_full_benchmark.sh
