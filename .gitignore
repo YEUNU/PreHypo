@@ -264,3 +264,4 @@ data/financebench_queries.json
 run_mhr_finish.sh
 run_flashinfer_switch.sh
 run_mhr_full_benchmark.sh
+.DS_Store
