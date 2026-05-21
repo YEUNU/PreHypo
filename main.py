@@ -55,7 +55,7 @@ def _preset_rag_domain() -> None:
 
 _preset_rag_domain()
 
-from cli.benchmark import run_benchmark_multi_seed
+from cli.benchmark import run_benchmark_multi_seed, reconcile_pending_judges
 from cli.index import run_indexing
 from models.prehypo.indexing.ocr import run_ocr
 from core.neo4j_service import Neo4jService
@@ -196,7 +196,13 @@ async def main():
             await run_indexing(args.dataset, args.strategy, args.model, args.corpus_tag, args.save_intermediate, sample_companies, args.save_to)
         elif args.mode == "benchmark":
             corpus_tag = _resolve_benchmark_corpus_tag(args, sample_mode)
+            # Pin the run dir so async judge batches can be reconciled afterwards.
+            env_ts = os.environ.get("RAG_BENCHMARK_TIMESTAMP")
+            timestamp = env_ts if env_ts else time.strftime("%Y%m%d_%H%M%S")
+            os.environ["RAG_BENCHMARK_TIMESTAMP"] = timestamp
+            results_dir = Path("data/results") / timestamp
             await run_benchmark_multi_seed(args.queries_file, args.strategy, args.model, sample_companies=sample_companies, corpus_tag=corpus_tag, limit=args.limit)
+            await reconcile_pending_judges(results_dir)
         elif args.mode == "benchmark_all":
             corpus_tag = _resolve_benchmark_corpus_tag(args, sample_mode)
             env_ts = os.environ.get("RAG_BENCHMARK_TIMESTAMP")
@@ -207,6 +213,9 @@ async def main():
             for strategy in ["naive", "prehypo", "hoprag", "ms_graphrag"]:
                 print(f"\n>>> Running Benchmark for: {strategy.upper()}")
                 await run_benchmark_multi_seed(args.queries_file, strategy, args.model, is_batch=True, sample_companies=sample_companies, corpus_tag=corpus_tag, output_dir=results_dir, limit=args.limit)
+            # All strategies done. In async batch-judge mode each left a pending
+            # manifest; resolve every batch in parallel now (one wait, not four).
+            await reconcile_pending_judges(results_dir)
         elif args.mode == "ocr":
             await run_ocr(args.pdf_dir, args.ocr_output, convert_tables=args.convert_tables, sample_companies=sample_companies)
     finally:

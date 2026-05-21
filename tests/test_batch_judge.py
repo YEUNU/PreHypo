@@ -116,3 +116,67 @@ def test_resolve_judge_fields_abstain_is_not_hallucination():
     # Honest abstain is resolved deterministically to non-hallucination.
     assert fields["hallucination"] == 0.0
     assert fields["hallucination_source"] == "rule_non_answer"
+
+
+@pytest.mark.asyncio
+async def test_reconcile_pending_judges_patches_and_cleans(tmp_path, monkeypatch):
+    """A pending manifest + result JSON gets patched from the resolved batch,
+    aggregates recomputed, summary sidecar refreshed, and the manifest removed."""
+    import cli.benchmark as cb
+    from core.config import RAGConfig
+
+    run_dir = tmp_path / "run"
+    strat_dir = run_dir / "naive" / "multihoprag"
+    strat_dir.mkdir(parents=True)
+    result_file = strat_dir / "naive_multihoprag.json"
+
+    # Two deferred (UNJUDGED -1) rows tagged with judge_custom_id, out of order.
+    result_json = {
+        "strategy": "naive", "corpus_tag": "multihoprag", "dataset": "MultiHop-RAG",
+        "total_queries": 2,
+        "details": [
+            {"category": "inference", "answer": "Paris is the capital.",
+             "judge_custom_id": "1", "llm_judge_score": -1.0, "hallucination": -1.0,
+             "doc_match": 1.0, "latency": 2.0},
+            {"category": "comparison", "answer": "It is larger.",
+             "judge_custom_id": "0", "llm_judge_score": -1.0, "hallucination": -1.0,
+             "doc_match": 0.0, "latency": 3.0},
+        ],
+    }
+    result_file.write_text(json.dumps(result_json))
+    manifest = {
+        "batch_id": "batch-XYZ", "judge_model": "gpt-test",
+        "result_file": str(result_file), "strategy": "naive",
+        "corpus_tag": "multihoprag", "dataset": "MultiHop-RAG",
+        "is_financebench": False, "is_multihoprag": True, "submitted": 2,
+    }
+    pending = strat_dir / "naive_multihoprag.pending_judge.json"
+    pending.write_text(json.dumps(manifest))
+
+    monkeypatch.setattr(RAGConfig, "OPENAI_API_KEY", "sk-test")
+    # custom_id "0" -> correct, "1" -> wrong; reconcile must map by judge_custom_id.
+    monkeypatch.setattr(cb, "_recompute_aggregates", cb._recompute_aggregates)  # keep real
+    monkeypatch.setattr(
+        "utils.batch_judge.resolve_batches",
+        lambda api_key, ids, poll: {"batch-XYZ": {
+            "0": {"score": 1.0, "hallucination": 0.0, "reason": "ok"},
+            "1": {"score": 0.0, "hallucination": 1.0, "reason": "wrong"},
+        }},
+    )
+
+    patched = await cb.reconcile_pending_judges(run_dir)
+    assert patched == 1
+    assert not pending.exists()  # manifest removed
+
+    out = json.loads(result_file.read_text())
+    by_cat = {r["category"]: r for r in out["details"]}
+    assert by_cat["comparison"]["llm_judge_score"] == 1.0   # custom_id 0
+    assert by_cat["inference"]["llm_judge_score"] == 0.0     # custom_id 1
+    # Aggregate over judged rows only.
+    assert out["avg_llm_judge_score"] == pytest.approx(0.5)
+    assert out["financebench_correct_count"] == 1
+    assert out["financebench_incorrect_count"] == 1
+    # Summary sidecar refreshed.
+    sidecar = json.loads((strat_dir / "naive_multihoprag.summary.json").read_text())
+    assert sidecar["avg_llm_judge_score"] == pytest.approx(0.5)
+    assert "details" not in sidecar

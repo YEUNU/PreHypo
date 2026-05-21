@@ -92,6 +92,150 @@ def _apply_judge_label(result_item: dict[str, Any], is_financebench: bool, is_mu
     result_item["financebench_label"] = financebench_label(judge_score, final_answer)
 
 
+def _recompute_aggregates(s: dict[str, Any], is_financebench: bool, is_multihoprag: bool) -> None:
+    """Recompute avg_<metric>, category_summaries and the 3-way label counts
+    from ``s['details']`` in place. Shared by the live benchmark pass and the
+    async batch reconcile step so both yield identical aggregates. Averages skip
+    the UNJUDGED sentinel (-1); every real metric is in [0, 1] (or latency >= 0).
+    """
+    rows = s.get("details") or []
+    ref = rows[-1] if rows else {}
+
+    def _avg(subset: list[dict], key: str) -> float:
+        vals = [r[key] for r in subset
+                if isinstance(r.get(key), (int, float)) and not isinstance(r.get(key), bool) and r[key] >= 0]
+        return sum(vals) / len(vals) if vals else 0.0
+
+    numeric_keys = [k for k in ref.keys()
+                    if isinstance(ref.get(k), (int, float)) and not isinstance(ref.get(k), bool)]
+    for key in numeric_keys:
+        s[f"avg_{key}"] = _avg(rows, key)
+
+    cats: dict[str, list] = {}
+    for r in rows:
+        cats.setdefault(r.get("category", "Uncategorized"), []).append(r)
+    cat_summaries: dict[str, Any] = {}
+    for cat, cat_list in cats.items():
+        cat_sum: dict[str, Any] = {"count": len(cat_list)}
+        for key in numeric_keys:
+            cat_sum[f"avg_{key}"] = _avg(cat_list, key)
+        cat_summaries[cat] = cat_sum
+    s["category_summaries"] = cat_summaries
+
+    if is_financebench or is_multihoprag:
+        fb_counts = {"Correct Answer": 0, "Incorrect Answer": 0, "Refusal": 0}
+        for r in rows:
+            label = r.get("financebench_label")
+            if label in fb_counts:
+                fb_counts[label] += 1
+        total = sum(fb_counts.values()) or 1  # judged rows only ("Unjudged" excluded)
+        s["financebench_correct_count"] = fb_counts["Correct Answer"]
+        s["financebench_incorrect_count"] = fb_counts["Incorrect Answer"]
+        s["financebench_refusal_count"] = fb_counts["Refusal"]
+        s["financebench_correct_rate"] = fb_counts["Correct Answer"] / total
+        s["financebench_incorrect_rate"] = fb_counts["Incorrect Answer"] / total
+        s["financebench_refusal_rate"] = fb_counts["Refusal"] / total
+
+
+def _slim_details(details: Optional[list]) -> list:
+    """Strip interaction_trace and internal _-prefixed keys (e.g. _deferred_judge)
+    from detail rows for the main result JSON."""
+    return [
+        {k: v for k, v in d.items() if k != "interaction_trace" and not k.startswith("_")}
+        if isinstance(d, dict) else d
+        for d in (details or [])
+    ]
+
+
+def _write_slim_main(s: dict[str, Any], result_file: Path) -> None:
+    with open(result_file, "w", encoding="utf-8") as file:
+        json.dump({**s, "details": _slim_details(s.get("details"))}, file, indent=2, ensure_ascii=False)
+
+
+async def reconcile_pending_judges(run_dir: Path) -> int:
+    """Resolve every pending async judge batch under ``run_dir``.
+
+    Each strategy that submitted a batch in async mode left a
+    ``*.pending_judge.json`` manifest next to its result file. This polls all
+    those batches in parallel (one wait, not one-per-strategy), patches each
+    result JSON's deferred rows by ``judge_custom_id``, recomputes aggregates,
+    refreshes the ``.summary.json`` sidecar, and deletes the manifest. The
+    per-row ``.details.jsonl``/``.traces.jsonl`` debug artifacts from the live
+    pass are left untouched (they carry the full traces; the main JSON that
+    kfold reads is authoritative). Idempotent and safe to re-run.
+
+    Returns the number of result files patched.
+    """
+    from utils.batch_judge import resolve_batches
+    from utils.metrics import _resolve_judge_fields
+
+    run_dir = Path(run_dir)
+    manifests = sorted(run_dir.rglob("*.pending_judge.json"))
+    if not manifests:
+        return 0
+    api_key = RAGConfig.OPENAI_API_KEY
+    if not api_key:
+        logger.error("reconcile: %d pending judge batch(es) but no OPENAI_API_KEY; rows stay unjudged.", len(manifests))
+        return 0
+
+    loaded: list[tuple[Path, dict]] = []
+    for mp in manifests:
+        try:
+            with open(mp, "r", encoding="utf-8") as f:
+                loaded.append((mp, json.load(f)))
+        except Exception as exc:
+            logger.warning("reconcile: could not read manifest %s: %s", mp, exc)
+
+    batch_ids = [m["batch_id"] for _, m in loaded if m.get("batch_id")]
+    logger.info("reconcile: polling %d judge batch(es) in parallel: %s", len(batch_ids), batch_ids)
+    resolved = await asyncio.to_thread(
+        resolve_batches, api_key, batch_ids, RAGConfig.JUDGE_BATCH_POLL_SECONDS
+    )
+
+    patched_files = 0
+    for mp, m in loaded:
+        bid = m.get("batch_id")
+        result_file = Path(m.get("result_file", ""))
+        payloads = resolved.get(bid, {})
+        if not result_file.exists():
+            logger.warning("reconcile: result file missing for batch %s: %s", bid, result_file)
+            continue
+        if not payloads:
+            logger.error("reconcile: batch %s returned no payloads; %s rows stay unjudged.", bid, result_file.name)
+            continue
+        with open(result_file, "r", encoding="utf-8") as f:
+            s = json.load(f)
+        judge_model = m.get("judge_model", "")
+        is_fb = bool(m.get("is_financebench"))
+        is_mhr = bool(m.get("is_multihoprag"))
+        patched = 0
+        for row in s.get("details") or []:
+            cid = row.get("judge_custom_id")
+            if cid is None:
+                continue
+            payload = payloads.get(str(cid))
+            if payload is None:
+                continue
+            row.update(_resolve_judge_fields(payload, row.get("answer", ""), judge_model))
+            _apply_judge_label(row, is_fb, is_mhr)
+            patched += 1
+        _recompute_aggregates(s, is_fb, is_mhr)
+        _write_slim_main(s, result_file)
+        overview = {k: v for k, v in s.items() if k != "details"}
+        with open(result_file.with_name(f"{result_file.stem}.summary.json"), "w", encoding="utf-8") as f:
+            json.dump(overview, f, indent=2, ensure_ascii=False)
+        logger.info("reconcile: patched %d/%s rows for %s (batch %s)",
+                    patched, m.get("submitted", "?"), result_file.name, bid)
+        try:
+            mp.unlink()
+        except OSError:
+            pass
+        patched_files += 1
+
+    logger.info("reconcile: done — %d result file(s) patched.", patched_files)
+    return patched_files
+
+
 async def run_benchmark(
     queries_file: str,
     strategy: str,
@@ -233,7 +377,6 @@ async def run_benchmark(
         """Rebuild the summary from `results` and write the result file +
         report artifacts. Called incrementally per query and once more after
         the batch judge patches deferred scores."""
-        ref = results[-1] if results else {}
         s: dict[str, Any] = {
             "strategy": strategy,
             "corpus_tag": corpus_tag,
@@ -253,56 +396,15 @@ async def run_benchmark(
                 "rolling_summary": RAGConfig.ABLATION_ROLLING_SUMMARY,
             },
         }
-        # Average over judged rows only: exclude the UNJUDGED sentinel (-1)
-        # (llm_judge_score / hallucination / answer_attempted when unscored).
-        # Every real metric is in [0, 1] (or latency >= 0), so `>= 0` drops only
-        # sentinels. avg_<key> reflects the rows that actually have that metric.
-        def _avg(rows: list[dict], key: str) -> float:
-            vals = [r[key] for r in rows
-                    if isinstance(r.get(key), (int, float)) and not isinstance(r.get(key), bool) and r[key] >= 0]
-            return sum(vals) / len(vals) if vals else 0.0
-
-        for key in ref.keys():
-            if isinstance(ref.get(key), (int, float)) and not isinstance(ref.get(key), bool):
-                s[f"avg_{key}"] = _avg(results, key)
-        cat_summaries = {}
-        for cat, cat_list in category_results.items():
-            cat_sum: dict[str, Any] = {"count": len(cat_list)}
-            for key in ref.keys():
-                if isinstance(ref.get(key), (int, float)) and not isinstance(ref.get(key), bool):
-                    cat_sum[f"avg_{key}"] = _avg(cat_list, key)
-            cat_summaries[cat] = cat_sum
-        s["category_summaries"] = cat_summaries
-
-        if is_financebench or is_multihoprag:
-            fb_counts = {"Correct Answer": 0, "Incorrect Answer": 0, "Refusal": 0}
-            for r in results:
-                label = r.get("financebench_label")
-                if label in fb_counts:
-                    fb_counts[label] += 1
-            # Rate denominator = judged rows only (exclude "Unjudged").
-            total = sum(fb_counts.values()) or 1
-            s["financebench_correct_count"] = fb_counts["Correct Answer"]
-            s["financebench_incorrect_count"] = fb_counts["Incorrect Answer"]
-            s["financebench_refusal_count"] = fb_counts["Refusal"]
-            s["financebench_correct_rate"] = fb_counts["Correct Answer"] / total
-            s["financebench_incorrect_rate"] = fb_counts["Incorrect Answer"] / total
-            s["financebench_refusal_rate"] = fb_counts["Refusal"] / total
-
         s["details"] = results
+        _recompute_aggregates(s, is_financebench, is_multihoprag)
         # Report artifacts first (writes full traces), then a slim main JSON
         # (no interaction_trace, no internal _-prefixed keys e.g. _deferred_judge).
         try:
             _write_model_report_artifacts(s, result_file)
         except Exception as exc:
             logger.warning("Failed to write report artifacts for %s: %s", result_file, exc)
-        slim_details = [
-            {k: v for k, v in d.items() if k != "interaction_trace" and not k.startswith("_")}
-            if isinstance(d, dict) else d
-            for d in (s.get("details") or [])
-        ]
-        with open(result_file, "w", encoding="utf-8") as file:
-            json.dump({**s, "details": slim_details}, file, indent=2, ensure_ascii=False)
+        _write_slim_main(s, result_file)
         return s
 
     async def _process_query(idx: int, item: dict[str, Any]):
@@ -443,32 +545,79 @@ async def run_benchmark(
     if not results:
         return None
 
-    # Phase 2 (batch judge): resolve every deferred score from one OpenAI batch,
-    # patch the result rows, recompute the 3-way labels, and rewrite the summary.
+    # Phase 2 (batch judge). Two modes:
+    #  - async (default): submit this strategy's batch and return immediately,
+    #    leaving a *.pending_judge.json manifest. reconcile_pending_judges()
+    #    (run once after all strategies) polls every batch in parallel and
+    #    patches scores — so strategies never block on each other's judge.
+    #  - inline: submit + poll-block + patch now (one wait per strategy).
     if batch_collector is not None and batch_collector.count > 0:
         from utils.metrics import _resolve_judge_fields, _call_judge_llm
-        payloads: Optional[dict[str, Any]] = None
-        try:
-            payloads = await batch_collector.run()
-        except Exception as exc:
-            logger.error("Batch judge failed (%s); falling back to synchronous judge for deferred rows.", exc)
-        for r in results:
-            deferred = r.pop("_deferred_judge", None)
-            if not deferred:
-                continue
-            cid = deferred["custom_id"]
-            payload = payloads.get(cid) if payloads is not None else None
-            if payload is None and payloads is None:
-                # Whole batch failed → sync fallback per row (keeps scores valid).
+
+        async def _sync_fallback_all() -> None:
+            """Judge every deferred row synchronously (used when the batch
+            submit/run fails outright). Keeps scores valid, never silently 0."""
+            for r in results:
+                deferred = r.pop("_deferred_judge", None)
+                if not deferred:
+                    continue
                 _, payload = await _call_judge_llm(deferred["prompt"], vllm)
-            judge_fields = _resolve_judge_fields(
-                payload,
-                deferred["response"],
-                deferred["judge_model"],
-            )
-            r.update(judge_fields)
-            _apply_judge_label(r, is_financebench, is_multihoprag)
-        summary = _recompute_and_persist()
+                r.update(_resolve_judge_fields(payload, deferred["response"], deferred["judge_model"]))
+                _apply_judge_label(r, is_financebench, is_multihoprag)
+
+        if RAGConfig.JUDGE_BATCH_ASYNC:
+            batch_id: Optional[str] = None
+            try:
+                batch_id = await batch_collector.submit()
+            except Exception as exc:
+                logger.error("Batch judge submit failed (%s); judging deferred rows synchronously.", exc)
+            if batch_id:
+                # Tag deferred rows so reconcile can map batch custom_ids back to
+                # the right (out-of-order) result row, then persist with tentative
+                # UNJUDGED (-1) scores. reconcile patches them after the run.
+                for r in results:
+                    dj = r.get("_deferred_judge")
+                    if dj:
+                        r["judge_custom_id"] = dj["custom_id"]
+                pending_path = output_results_dir / f"{strategy}_{corpus_tag}{sample_suffix}.pending_judge.json"
+                manifest = {
+                    "batch_id": batch_id,
+                    "judge_model": str(RAGConfig.EVAL_MODEL or ""),
+                    "result_file": str(result_file),
+                    "strategy": strategy,
+                    "corpus_tag": corpus_tag,
+                    "dataset": dataset_name,
+                    "is_financebench": is_financebench,
+                    "is_multihoprag": is_multihoprag,
+                    "submitted": batch_collector.count,
+                }
+                with open(pending_path, "w", encoding="utf-8") as f:
+                    json.dump(manifest, f, indent=2)
+                logger.info(
+                    "Judge batch %s submitted async (%d prompts); reconcile will patch %s.",
+                    batch_id, batch_collector.count, result_file.name,
+                )
+                summary = _recompute_and_persist()
+            else:
+                await _sync_fallback_all()
+                summary = _recompute_and_persist()
+        else:
+            payloads: Optional[dict[str, Any]] = None
+            try:
+                payloads = await batch_collector.run()
+            except Exception as exc:
+                logger.error("Batch judge failed (%s); falling back to synchronous judge for deferred rows.", exc)
+            if payloads is None:
+                await _sync_fallback_all()
+            else:
+                for r in results:
+                    deferred = r.pop("_deferred_judge", None)
+                    if not deferred:
+                        continue
+                    payload = payloads.get(deferred["custom_id"])
+                    r.update(_resolve_judge_fields(payload, deferred["response"], deferred["judge_model"]))
+                    _apply_judge_label(r, is_financebench, is_multihoprag)
+            summary = _recompute_and_persist()
 
     def _make_gate_check(actual: float, target: float, mode: str) -> dict[str, Any]:
         passed = actual >= target if mode == "min" else actual <= target

@@ -64,12 +64,11 @@ class OpenAIBatchJudge:
             buf.write((json.dumps(line, ensure_ascii=False) + "\n").encode("utf-8"))
         return buf.getvalue()
 
-    def _run_sync(self) -> dict[str, Optional[dict]]:
-        """Blocking: upload, create batch, poll, download, parse. Runs in a thread."""
+    def _submit_sync(self) -> Optional[str]:
+        """Upload the JSONL and create the batch. Returns the batch id (no poll)."""
         from openai import OpenAI  # local import so the dep is only needed when used
 
         client = OpenAI(api_key=self.api_key)
-
         upload = client.files.create(
             file=("judge_batch.jsonl", self._build_jsonl()),
             purpose="batch",
@@ -80,42 +79,104 @@ class OpenAIBatchJudge:
             completion_window="24h",
         )
         logger.info("Judge batch submitted: id=%s, %d requests", batch.id, self.count)
+        return batch.id
 
-        # No client-side timeout: the OpenAI batch SLA is up to 24h and the user
-        # accepts a long wait. Poll until the batch reaches a terminal state.
-        waited = 0
-        while batch.status not in _TERMINAL:
-            time.sleep(self.poll_seconds)
-            waited += self.poll_seconds
-            batch = client.batches.retrieve(batch.id)
-            counts = getattr(batch, "request_counts", None)
-            logger.info(
-                "Judge batch %s: status=%s, %ss elapsed%s",
-                batch.id, batch.status, waited,
-                f", {counts.completed}/{counts.total} done" if counts else "",
-            )
+    async def submit(self) -> Optional[str]:
+        """Submit the batch without waiting. Returns the batch id (or None when
+        there is nothing to judge). Use `resolve_batches`/`poll_and_fetch` later
+        to retrieve the results — the work runs asynchronously on OpenAI's side."""
+        if not self._requests:
+            return None
+        return await asyncio.to_thread(self._submit_sync)
 
-        if batch.status != "completed":
-            raise RuntimeError(f"Judge batch {batch.id} ended in state '{batch.status}'")
-
-        out_text = client.files.content(batch.output_file_id).text
-        results: dict[str, Optional[dict]] = {}
-        for raw in out_text.splitlines():
-            raw = raw.strip()
-            if not raw:
-                continue
-            try:
-                row = json.loads(raw)
-                custom_id = row.get("custom_id")
-                content = row["response"]["body"]["choices"][0]["message"]["content"]
-                results[custom_id] = json.loads(clean_and_unwrap_json(content))
-            except Exception as exc:  # one bad line shouldn't sink the batch
-                logger.warning("Batch judge: could not parse output line: %s", exc)
-        logger.info("Judge batch %s complete: %d/%d parsed", batch.id, len(results), self.count)
-        return results
+    def _run_sync(self) -> dict[str, Optional[dict]]:
+        """Blocking: submit, poll, download, parse. Runs in a thread."""
+        batch_id = self._submit_sync()
+        return poll_and_fetch(self.api_key, batch_id, self.poll_seconds)
 
     async def run(self) -> dict[str, Optional[dict]]:
         """Submit + await the batch. Returns {custom_id: payload or None}."""
         if not self._requests:
             return {}
         return await asyncio.to_thread(self._run_sync)
+
+
+def _parse_batch_output(out_text: str, total: Optional[int] = None) -> dict[str, Optional[dict]]:
+    """Parse a batch output JSONL into {custom_id: parsed_payload}."""
+    results: dict[str, Optional[dict]] = {}
+    for raw in out_text.splitlines():
+        raw = raw.strip()
+        if not raw:
+            continue
+        try:
+            row = json.loads(raw)
+            custom_id = row.get("custom_id")
+            content = row["response"]["body"]["choices"][0]["message"]["content"]
+            results[custom_id] = json.loads(clean_and_unwrap_json(content))
+        except Exception as exc:  # one bad line shouldn't sink the batch
+            logger.warning("Batch judge: could not parse output line: %s", exc)
+    logger.info("Judge batch parsed: %d%s payloads", len(results), f"/{total}" if total else "")
+    return results
+
+
+def poll_and_fetch(
+    api_key: str,
+    batch_id: str,
+    poll_seconds: int = 15,
+    client=None,
+) -> dict[str, Optional[dict]]:
+    """Block until `batch_id` reaches a terminal state, then download + parse.
+
+    No client-side timeout — the OpenAI batch SLA is up to 24h. Raises if the
+    batch ends in any state other than ``completed``.
+    """
+    from openai import OpenAI
+
+    client = client or OpenAI(api_key=api_key)
+    poll_seconds = max(2, int(poll_seconds))
+    batch = client.batches.retrieve(batch_id)
+    waited = 0
+    while batch.status not in _TERMINAL:
+        time.sleep(poll_seconds)
+        waited += poll_seconds
+        batch = client.batches.retrieve(batch_id)
+        counts = getattr(batch, "request_counts", None)
+        logger.info(
+            "Judge batch %s: status=%s, %ss elapsed%s",
+            batch.id, batch.status, waited,
+            f", {counts.completed}/{counts.total} done" if counts else "",
+        )
+    if batch.status != "completed":
+        raise RuntimeError(f"Judge batch {batch_id} ended in state '{batch.status}'")
+    out_text = client.files.content(batch.output_file_id).text
+    return _parse_batch_output(out_text)
+
+
+def resolve_batches(
+    api_key: str,
+    batch_ids: list[str],
+    poll_seconds: int = 15,
+) -> dict[str, dict[str, Optional[dict]]]:
+    """Poll several batches concurrently. Returns {batch_id: {custom_id: payload}}.
+
+    A batch that fails/expires (or whose download errors) maps to an empty dict
+    and is logged — the caller decides how to treat the unresolved rows.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+
+    ids = [b for b in dict.fromkeys(batch_ids) if b]
+    out: dict[str, dict[str, Optional[dict]]] = {}
+    if not ids:
+        return out
+
+    def _one(bid: str) -> tuple[str, dict[str, Optional[dict]]]:
+        try:
+            return bid, poll_and_fetch(api_key, bid, poll_seconds)
+        except Exception as exc:
+            logger.error("Judge batch %s did not resolve: %s", bid, exc)
+            return bid, {}
+
+    with ThreadPoolExecutor(max_workers=max(1, len(ids))) as pool:
+        for bid, res in pool.map(_one, ids):
+            out[bid] = res
+    return out

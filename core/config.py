@@ -48,6 +48,11 @@ class RAGConfig:
     # Poll cadence only; there is no client-side timeout (OpenAI batches may take
     # up to 24h — the run waits as long as needed).
     JUDGE_BATCH_POLL_SECONDS = int(os.environ.get("RAG_JUDGE_BATCH_POLL_SECONDS", "15"))
+    # Async batch judge (default on): each strategy submits its judge batch and
+    # moves on without blocking; a reconcile pass after all strategies polls the
+    # batches in parallel and patches scores. Set false to poll-block inline
+    # (the old behaviour: each strategy waits for its own batch before the next).
+    JUDGE_BATCH_ASYNC = os.environ.get("RAG_JUDGE_BATCH_ASYNC", "true").strip().lower() in {"1", "true", "yes", "on"}
 
     # --- Common Service Settings ---
     RETRY_COUNT = int(os.environ.get("RAG_RETRY_COUNT", "3"))
