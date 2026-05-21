@@ -15,6 +15,7 @@ from core.neo4j_service import Neo4jService
 from core.vllm_client import VLLMClient, get_llm_client
 from models.prehypo.indexing import IndexingPipeline
 from models.prehypo.retrieval import RetrievalPipeline
+from utils.prompts.shared import answer_role
 
 
 _ANSWER_PREFIX = "@@ANSWER:"
@@ -104,9 +105,11 @@ class GraphRAG(IndexingPipeline, RetrievalPipeline):
     def _build_answer_prompt(context: str, user_query: str) -> str:
         # Single-pass synthesis prompt (paper §3.2.6). Structurally identical
         # to the HopRAG / naive baseline prompts so any score gap traces back
-        # to retrieval, not synthesis-prompt asymmetry.
+        # to retrieval, not synthesis-prompt asymmetry. The analyst role is
+        # domain-aware (RAGConfig.DOMAIN) so news/multi-hop corpora aren't
+        # framed as financial filings; all baselines use the same role helper.
         return (
-            "You are a financial analyst. Answer the question using only the provided context.\n"
+            f"You are {answer_role()}. Answer the question using only the provided context.\n"
             "If the context is insufficient, say you do not know.\n"
             "\n"
             f"Context:\n{context}\n"

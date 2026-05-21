@@ -25,6 +25,10 @@ from __future__ import annotations
 # queried fact.
 ABSTAIN_PHRASES: tuple[str, ...] = (
     "insufficient evidence",
+    # MultiHop-RAG's null_query gold answer is literally "Insufficient
+    # information." so an honest abstain must match it for correct Refusal
+    # labeling on that dataset.
+    "insufficient information",
     "i do not know",
     "i don't know",
     "do not know",

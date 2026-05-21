@@ -1,3 +1,13 @@
+from core.config import RAGConfig
+
+
+def answer_role() -> str:
+    """Domain-aware role for the single-pass answer-synthesis prompt. News /
+    general corpora (RAGConfig.DOMAIN == "news") aren't framed as financial
+    filings; everything else keeps the FinanceBench analyst role."""
+    return "a news research assistant" if RAGConfig.DOMAIN == "news" else "a financial analyst"
+
+
 _FINANCE_CONSTRAINT_CODES = (
     "C1 entity/period match, "
     "C2 source_anchor + primary statement priority, "

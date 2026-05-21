@@ -1,4 +1,16 @@
-HOPRAG_PROMPT = """
+from core.config import RAGConfig
+
+# ---------------------------------------------------------------------------
+# Domain-specific prompt variants. The model-side prompts below are selected
+# by RAGConfig.DOMAIN ("financial" for FinanceBench / SEC filings, "news" for
+# MultiHop-RAG / general article corpora). The Q-/Q+ hypothetical-query
+# structure (paper §3.1.3) is identical across domains; only the grounding
+# anchors and bridge types differ (financial statements/periods vs. named
+# entities/sources/events). Selection happens once at import; each index or
+# benchmark process runs a single dataset, so domain is fixed per process.
+# ---------------------------------------------------------------------------
+
+_FIN_HOPRAG_PROMPT = """
 Analyze this financial document chunk and generate hypothetical questions to enable multi-hop reasoning.
 
 Definitions (paper §3.1.3 — keep them strictly distinct):
@@ -27,12 +39,43 @@ CHUNK:
 {chunk}
 """
 
+_NEWS_HOPRAG_PROMPT = """
+Analyze this news/article text chunk and generate hypothetical questions to enable multi-hop reasoning.
+
+Definitions (paper §3.1.3 — keep them strictly distinct):
+- Q- (Incoming, self-contained): questions that THIS CHUNK ALONE answers verbatim. Used to retrieve this chunk when a user query asks for a fact already on the page.
+- Q+ (Outgoing dependency / Bridge): questions that POINT OUTWARD from this chunk — they reference a person, organization, place, event, or date grounded here, but the answer ALSO REQUIRES information from a DIFFERENT chunk or article. The Q+ question is the missing counterpart another article would supply. Q+ is what builds the multi-hop graph; it is NOT a paraphrase of Q-.
+
+Rules:
+1. Q-: up to 3 self-contained questions this chunk directly answers; use [] if the chunk lacks concrete answerable facts.
+2. Q+: up to 3 outward-dependency questions. Each Q+ MUST satisfy at least one of:
+   (a) ask about the SAME entity or event at a DIFFERENT time, or as reported by a DIFFERENT source, than shown here;
+   (b) ask about a RELATIONSHIP, role, motive, or consequence linking an entity grounded here to another entity/event NOT fully described in this chunk;
+   (c) ask a COMPARISON or cause/effect that requires another article (e.g., how another outlet covered the same event, an earlier cause or later development);
+   (d) ask about a CROSS-DOCUMENT bridge (a person/organization/place mentioned here whose details live in a different article).
+   If none of (a)-(d) apply, leave Q+ empty rather than emit a Q- duplicate.
+3. Every produced question must be specific, answerable from a finite news context, and <= 22 words.
+4. Each question SHOULD include grounding tokens (person / organization / place / event / source / date) that appear in this chunk; aim for at least two of these signals per question to keep the question retrievable.
+5. If a date/time token exists in this chunk, include it in each Q-; for Q+ a different time is allowed (in fact preferred for type (a)).
+6. Never use placeholders/meta phrases such as "this article", "the source", or "the document" as the only anchor.
+7. Never fabricate unseen facts, dates, entities, quotes, or events.
+8. If this chunk is mostly navigation/ads/bylines/boilerplate or fragments with weak context, return shorter lists (or empty lists) rather than low-quality questions.
+9. If the chunk contains comparative or temporal cues (before/after, increased/decreased, versus, earlier/later, in response to), produce at least 1 Q+ of type (a) or (c).
+10. Dense Summary: exactly 1 sentence, maximum 35 words, grounded only in this chunk; preserve names and dates exactly when present.
+
+GLOBAL CONTEXT: {global_context}
+CHUNK:
+{chunk}
+"""
+
+HOPRAG_PROMPT = _NEWS_HOPRAG_PROMPT if RAGConfig.DOMAIN == "news" else _FIN_HOPRAG_PROMPT
+
 HOPRAG_FORMAT_INSTRUCTION = """
 Output ONLY JSON:
 {{"summary": "concise informative summary", "q_minus": ["q1", "q2", "q3"], "q_plus": ["q1", "q2", "q3"]}}
 """
 
-QUERY_REWRITE_PROMPT = """
+_FIN_QUERY_REWRITE_PROMPT = """
 Rewrite the query into finance-focused retrieval variants.
 Rules:
 1. Generate 1-3 high-precision variants preserving original meaning.
@@ -49,6 +92,22 @@ Rules:
 8. Do NOT introduce another company/year/period, unsupported assumptions, or special query syntax operators.
 Original Query: {query}
 """
+
+_NEWS_QUERY_REWRITE_PROMPT = """
+Rewrite the query into precise retrieval variants for a news/article corpus.
+Rules:
+1. Generate 1-3 high-precision variants preserving original meaning.
+2. Detect constraint anchors from the original query: named-entity token(s) (person/organization/place), source or publisher token(s), and time token(s) (date/month/year).
+3. Every variant must include the same named-entity token(s) and time token(s) when present; if they cannot be preserved, do not emit that variant.
+4. Keep the core relationship, comparison, or event description and any named qualifiers unchanged.
+5. Preserve exact tokens for proper nouns, titles, and source/publisher names when present (e.g., The Verge, TechCrunch, BBC).
+6. When the original query references a specific source/publisher, include that source token in at least one variant. For queries that do not name a source, omit it rather than fabricating one.
+7. Use only widely-equivalent synonyms (e.g., CEO ↔ chief executive); never swap one named entity for another.
+8. Do NOT introduce another entity/date/source, unsupported assumptions, or special query syntax operators.
+Original Query: {query}
+"""
+
+QUERY_REWRITE_PROMPT = _NEWS_QUERY_REWRITE_PROMPT if RAGConfig.DOMAIN == "news" else _FIN_QUERY_REWRITE_PROMPT
 
 RERANK_QUERY_SIMPLIFY_PROMPT = """
 Extract the underlying question from a possibly-verbose user query for use as
@@ -80,7 +139,7 @@ Output ONLY JSON:
 {{"positive_queries": []}}
 """
 
-RERANKER_INSTRUCTION = (
+_FIN_RERANKER_INSTRUCTION = (
     "Rank the passage by whether it directly answers the query. "
     "Match the exact entity, period, and line-item phrasing requested in the query. "
     "When the query asks about a specific line-item name, prefer passages "
@@ -90,7 +149,17 @@ RERANKER_INSTRUCTION = (
     "Down-rank boilerplate."
 )
 
-SEARCH_CONTINUATION_PROMPT = """
+_NEWS_RERANKER_INSTRUCTION = (
+    "Rank the passage by whether it directly answers the query. "
+    "Match the exact named entity, source/publisher, time, and event phrasing "
+    "requested in the query. Prefer passages naming the same people, "
+    "organizations, places, and dates as the query, not merely related ones. "
+    "Down-rank boilerplate, navigation, and ads."
+)
+
+RERANKER_INSTRUCTION = _NEWS_RERANKER_INSTRUCTION if RAGConfig.DOMAIN == "news" else _FIN_RERANKER_INSTRUCTION
+
+_FIN_SEARCH_CONTINUATION_PROMPT = """
 Decide whether retrieval should continue.
 Decision rules:
 1. Infer required evidence slots from QUERY. For compute queries, infer all primitive operands needed for the formula, not only the final derived metric.
@@ -101,6 +170,20 @@ Decision rules:
 QUERY: {query}
 CONTEXT: {context}
 """
+
+_NEWS_SEARCH_CONTINUATION_PROMPT = """
+Decide whether retrieval should continue.
+Decision rules:
+1. Infer required evidence slots from QUERY. For multi-hop queries, infer each distinct fact, entity, or source needed to answer, not only the final answer.
+2. Return "SUFFICIENT" only when all required slots are grounded in context with matching named entities, sources, and time constraints.
+3. Evidence may come from multiple articles/sources; do not require a single-document hit.
+4. Return "INSUFFICIENT" if any required slot is missing, ambiguous, conflicting, or tied to the wrong entity/source/time.
+5. Prefer stopping as soon as slot coverage is complete; avoid unnecessary extra hops.
+QUERY: {query}
+CONTEXT: {context}
+"""
+
+SEARCH_CONTINUATION_PROMPT = _NEWS_SEARCH_CONTINUATION_PROMPT if RAGConfig.DOMAIN == "news" else _FIN_SEARCH_CONTINUATION_PROMPT
 
 SEARCH_CONTINUATION_FORMAT_INSTRUCTION = """
 Output ONLY JSON:

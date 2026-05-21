@@ -1,0 +1,1862 @@
+[
+  {
+    "_id": "multihoprag_00535",
+    "query": "Which individual, subject to a criminal trial covered by TechCrunch and associated with allegations of fraud and conspiracy for their actions at a crypto exchange, is also accused by Fortune of using a colleague at Alameda Research to secretly access customer funds and whose purported success was claimed to be based on falsehoods?",
+    "ground_truth": "Sam Bankman-Fried",
+    "evidence_docs": [
+      "SBF’s trial starts soon, but how did he — and FTX — get here?",
+      "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "The highly anticipated criminal trial for Sam Bankman-Fried, former CEO of bankrupt crypto exchange FTX, started Tuesday to determine whether he’s guilty of seven counts of fraud and conspiracy.",
+      "But “all of that, all of it, was built on lies,” Rehn declared to the jury.",
+      "Using Caroline Ellison, his on-again off-again girlfriend and the CEO of Alameda, as a front, Bankman-Fried had “secret access” to customer money—both cash and crypto—the government claimed.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "SBF’s trial starts soon, but how did he — and FTX — get here?",
+    "evidence_page": null,
+    "evidence_text": "The highly anticipated criminal trial for Sam Bankman-Fried, former CEO of bankrupt crypto exchange FTX, started Tuesday to determine whether he’s guilty of seven counts of fraud and conspiracy.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00308",
+    "query": "Did The Guardian's report on December 12, 2023, contradict the Sporting News report regarding the performance and future outlook of Manchester United?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "Ten Hag’s Manchester United stand up and die at club stuck in the past tense | Barney Ronay",
+      "Champions League permutations, scenarios: What teams need to qualify from groups for 2023/24 Round of 16 stage"
+    ],
+    "evidence_facts": [
+      "For all their own flaws Bayern are basically a good version of whatever it is United are attempting to piece together.",
+      "Manchester United are out of Europe altogether after a limp display against Bayern at Old Trafford, where Kingsley Coman sealed a 1-0 win for Thomas Tuchel's side."
+    ],
+    "evidence_doc": "Ten Hag’s Manchester United stand up and die at club stuck in the past tense | Barney Ronay",
+    "evidence_page": null,
+    "evidence_text": "For all their own flaws Bayern are basically a good version of whatever it is United are attempting to piece together.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00970",
+    "query": "Between the TechCrunch report on the Google antitrust case published on October 31, 2023, and the TechCrunch report on the class action antitrust suit against Google published on December 15, 2023, was there consistency in the portrayal of Google's alleged anticompetitive behavior?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "5 things we learned so far about the Google antitrust case",
+      "What to know about Fortnite maker Epic Games’ antitrust battle with Google, starting today",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "When Google’s search head Prabhakar Raghavan testified in court on October 28, he revealed that the tech giant had paid $26.3 billion in 2021 to multiple browsers, phones and platforms, from companies including Apple, Samsung and Mozilla, The Verge reports.",
+      "It will attempt to argue that Google restrains competition within two separate markets, including the distribution of apps to Android users and the market for payment processing solutions for content inside Android apps.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "5 things we learned so far about the Google antitrust case",
+    "evidence_page": null,
+    "evidence_text": "When Google’s search head Prabhakar Raghavan testified in court on October 28, he revealed that the tech giant had paid $26.3 billion in 2021 to multiple browsers, phones and platforms, from companies including Apple, Samsung and Mozilla, The Verge reports.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01732",
+    "query": "Between the report by FOX News - Health on October 1st, 2023, stating that '97% of kids use their device during school hours and beyond, with study participants using TikTok for nearly two hours per day on average', and the article from TechCrunch on October 2nd, 2023, discussing 'Vivek Ramaswamy's difficulty in making headway on TikTok with young users', is there consistency in the portrayal of the significant use of TikTok among young people?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Cell phone shocker as 97% of kids use their device during school hours and beyond, says study",
+      "Republicans still don’t know how to talk to young voters online"
+    ],
+    "evidence_facts": [
+      "In particular, TikTok was used by half of the study participants, for nearly two hours per day on average.",
+      "The presidential election is more than a year away, but it may be too late for Ramaswamy to make any headway on TikTok, where the platform’s young users still don’t take him seriously."
+    ],
+    "evidence_doc": "Cell phone shocker as 97% of kids use their device during school hours and beyond, says study",
+    "evidence_page": null,
+    "evidence_text": "In particular, TikTok was used by half of the study participants, for nearly two hours per day on average.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01848",
+    "query": "Does the article from Fortune discussing the attack by Hamas on Israel suggest a different scale of conflict compared to what is historically usual, as opposed to the article from Globes English | Israel Business Arena which focuses on Eylon Levy's awareness of Israel's historical role?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Gen Z just saw the worst war in Israel in 50 years break out all over the internet, but they were raised on 'disturbing images'",
+      "Israel's prince of public diplomacy"
+    ],
+    "evidence_facts": [
+      "On Saturday, the Islamic militant group Hamas launched an unprecedented attack on Israel, resulting in the worst war the region has seen in 50 years.",
+      "Alongside this, I grew up with a strong awareness of the importance of the State of Israel and its historical role in the history of our people."
+    ],
+    "evidence_doc": "Gen Z just saw the worst war in Israel in 50 years break out all over the internet, but they were raised on 'disturbing images'",
+    "evidence_page": null,
+    "evidence_text": "On Saturday, the Islamic militant group Hamas launched an unprecedented attack on Israel, resulting in the worst war the region has seen in 50 years.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00631",
+    "query": "Considering the information from a BBC News article and a Reuters report on TomTom Junction Analytics, which city, identified as having the most congested traffic in both reports, also implemented a new traffic management system using TomTom's technology as mentioned in the BBC News article?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00808",
+    "query": "Between the TechCrunch report on Sam Bankman-Fried's intentions published on October 2, 2023, and the Verge report about Sam Bankman-Fried published on October 28, 2023, does these reports mention Sam Bankman-Fried's plan to use his wealth to save humanity, as well as his inability to run both companies simultaneously and the defense's argument that he was not a fraudulent actor?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "SBF, riding high on FTX, reportedly offered $5B to Trump to cancel President re-run",
+      "The jury finally hears from Sam Bankman-Fried",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "He was the richest person in the world under 30 [and] he was going to spend it to save humanity from extinction,” he said.",
+      "Because FTX had grown so much, he could no longer run both companies, he said.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "SBF, riding high on FTX, reportedly offered $5B to Trump to cancel President re-run",
+    "evidence_page": null,
+    "evidence_text": "He was the richest person in the world under 30 [and] he was going to spend it to save humanity from extinction,” he said.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00009",
+    "query": "Which company, as reported by both TechCrunch and The Verge, has spent billions to maintain its default search engine status on various platforms and is also accused of harming news publishers’ revenue through its business practices?",
+    "ground_truth": "Google",
+    "evidence_docs": [
+      "5 things we learned so far about the Google antitrust case",
+      "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "When Google’s search head Prabhakar Raghavan testified in court on October 28, he revealed that the tech giant had paid $26.3 billion in 2021 to multiple browsers, phones and platforms, from companies including Apple, Samsung and Mozilla, The Verge reports.",
+      "The Justice Department is focused on the deals Google makes — with Apple but also with Samsung and Mozilla and many others — to ensure it is the default search engine on practically every platform.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "5 things we learned so far about the Google antitrust case",
+    "evidence_page": null,
+    "evidence_text": "When Google’s search head Prabhakar Raghavan testified in court on October 28, he revealed that the tech giant had paid $26.3 billion in 2021 to multiple browsers, phones and platforms, from companies including Apple, Samsung and Mozilla, The Verge reports.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00489",
+    "query": "Considering the information from a New York Times article and a Forbes report on Chip Bergh, what is the first letter of the company that Bergh is associated with, which has seen a significant shift in sustainability practices under his leadership according to the New York Times, and has also been reported by Forbes to have experienced a notable increase in market share during his tenure?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02410",
+    "query": "Between the report from The Age on October 22, 2023, regarding Google's manipulation of search results to maximize ad revenue, and the TechCrunch report on December 15, 2023, about a class action antitrust suit filed against Google citing AI's harms to news publishers' bottom lines, is the portrayal of Google's business practices consistent?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "What to know about Fortnite maker Epic Games’ antitrust battle with Google, starting today",
+      "Is Google Search better than the rest? And is that fair?",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "Epic will also suggest that Google hid items from discovery by allowing execs and employees to have “off the record” chats, but Google will counter this as well, saying it has provided the court with thousands of chat logs and millions of documents.",
+      "She admits that she may have misinterpreted the evidence, but maintains that Google manipulates Search to maximise ad revenue.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "What to know about Fortnite maker Epic Games’ antitrust battle with Google, starting today",
+    "evidence_page": null,
+    "evidence_text": "Epic will also suggest that Google hid items from discovery by allowing execs and employees to have “off the record” chats, but Google will counter this as well, saying it has provided the court with thousands of chat logs and millions of documents.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02251",
+    "query": "Does the 'Fortune' article suggest that the foundation of FTX's success is the same as the 'TechCrunch' articles' implication that Sam Bankman-Fried's actions were based on fraudulent intentions?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+      "SBF, riding high on FTX, reportedly offered $5B to Trump to cancel President re-run",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "But “all of that, all of it, was built on lies,” Rehn declared to the jury.",
+      "SBF, as he’s known, has pleaded not-guilty to some seven charges of fraud and conspiracy.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+    "evidence_page": null,
+    "evidence_text": "But “all of that, all of it, was built on lies,” Rehn declared to the jury.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01040",
+    "query": "Between the report by The Verge on Apple's defense of its Google Search deal published on September 26, 2023, and the TechCrunch report on the class action antitrust suit against Google published on December 15, 2023, was there no change in the portrayal of Google's business practices from a perspective of exclusivity to anticompetitive concerns?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "The Justice Department is focused on the deals Google makes — with Apple but also with Samsung and Mozilla and many others — to ensure it is the default search engine on practically every platform.",
+      "Google unveils new hardware: This week was Google’s annual hardware event, where the search and consumer tech giant showed off what it’s been working on.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+    "evidence_page": null,
+    "evidence_text": "The Justice Department is focused on the deals Google makes — with Apple but also with Samsung and Mozilla and many others — to ensure it is the default search engine on practically every platform.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00707",
+    "query": "Which basketball team, recently commended by Yardbarker for their draft choices of Jonathan Kuminga and Moses Moody, would also lead to a successful point spread bet as per Sporting News if they were to win by 10 or more points?",
+    "ground_truth": "Golden State Warriors",
+    "evidence_docs": [
+      "Golden State's draft misses are starting to add up",
+      "Point Spread Betting - What is a Point Spread Bet?"
+    ],
+    "evidence_facts": [
+      "It’s true that the Warriors received glowing grades from draft analysts following their selections of Kuminga, out of the G-League Ignite program, at No.",
+      "To win a bet on the Warriors, they need to win by 10 or more points."
+    ],
+    "evidence_doc": "Golden State's draft misses are starting to add up",
+    "evidence_page": null,
+    "evidence_text": "It’s true that the Warriors received glowing grades from draft analysts following their selections of Kuminga, out of the G-League Ignite program, at No.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00261",
+    "query": "Does the article from 'The Independent - Life and Style' claim that Taylor Swift is secretive about her relationship with a specific individual, in contrast to the 'CBSSports.com' article which discusses her rumored romance but focuses on her attendance and performance at a specific venue?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "Taylor Swift is Time’s Person of the Year",
+      "Taylor Swift-Travis Kelce timeline: Everything to know about rumored romance between pop star, Chiefs TE"
+    ],
+    "evidence_facts": [
+      "Now, Swift has shared that she has nothing to hide in her new relationship with Kelce.",
+      "The game is taking place at Arrowhead Stadium, where Swift has performed herself and attended a game before."
+    ],
+    "evidence_doc": "Taylor Swift is Time’s Person of the Year",
+    "evidence_page": null,
+    "evidence_text": "Now, Swift has shared that she has nothing to hide in her new relationship with Kelce.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01444",
+    "query": "Considering the information from a New York Times article discussing the new benefits of the American Express Platinum card and a Wall Street Journal report on the changes in the annual fee for the same card, which single letter represents both the starting character of the exclusive airport lounge that cardholders get access to and the first letter of the city where American Express's headquarters is located?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01450",
+    "query": "Considering the information from an article in The Wall Street Journal about the recent surge in Open Interest for tech stocks and a report by Bloomberg on the unusual spike in Open Interest for a specific tech company following a major product announcement, which letter represents the stock symbol of the company that is common to both articles?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00745",
+    "query": "Do both the Polygon article discussing gadgets, movies, TV shows, and streaming services and the TechCrunch article mentioning Google refer to annual events related to their respective topics of entertainment options and hardware developments?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "The best gifts to level up a home theater",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "The call of the couch gets stronger every year as new gadgets, movies, TV shows, and streaming services launch.",
+      "Google unveils new hardware: This week was Google’s annual hardware event, where the search and consumer tech giant showed off what it’s been working on."
+    ],
+    "evidence_doc": "The best gifts to level up a home theater",
+    "evidence_page": null,
+    "evidence_text": "The call of the couch gets stronger every year as new gadgets, movies, TV shows, and streaming services launch.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01539",
+    "query": "Does the 'Essentially Sports' article suggest that Canelo Alvarez's wealth accumulation is on a similar trajectory as Floyd Mayweather's, while the 'TechCrunch' article discusses Sam Bankman-Fried's wealth in the context of his altruistic intentions, without comparing it to another individual's wealth trajectory?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Potential Conor McGregor Fight Could Help Canelo Alvarez Come a Step Closer to Surpass Floyd Mayweather’s Net Worth and His Billionaire Status",
+      "SBF, riding high on FTX, reportedly offered $5B to Trump to cancel President re-run"
+    ],
+    "evidence_facts": [
+      "However, despite Floyd’s massive net worth, Canelo has inched closer to Floyd’s billionaire status over the years.",
+      "He was the richest person in the world under 30 [and] he was going to spend it to save humanity from extinction,” he said."
+    ],
+    "evidence_doc": "Potential Conor McGregor Fight Could Help Canelo Alvarez Come a Step Closer to Surpass Floyd Mayweather’s Net Worth and His Billionaire Status",
+    "evidence_page": null,
+    "evidence_text": "However, despite Floyd’s massive net worth, Canelo has inched closer to Floyd’s billionaire status over the years.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01715",
+    "query": "Does 'The Roar | Sports Writers Blog' suggest that 'The All Blacks' motivation for playing is more self-centered compared to the Springboks, while also indicating that 'The All Blacks' had a specific in-game failure to release on their goal line, and acknowledging 'The All Blacks' previous losses to Argentina, or are the motivations, in-game actions, and historical outcomes described differently for 'The All Blacks' in each article?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Legacy vs ego: The Springboks are playing for South Africa, the All Blacks are playing for themselves",
+      "THE GREATEST! Boks beat All Blacks in instant classic to claim record FOURTH RWC in controversial, dramatic final",
+      "‘It happens’: All Blacks defend star centre after spray as Cheika heaps pressure on ‘favourites’ New Zealand"
+    ],
+    "evidence_facts": [
+      "It would seem that, as the Springboks play for their country, the All Blacks are playing for themselves as much as anyone – and the generation of players and leaders that will call time on their international careers at week’s end.",
+      "The Springboks took a 12-3 lead after 34 minutes when the All Blacks once again failed to release on their goal line.",
+      "It comes despite Argentina knocking over the All Blacks last year in Christchurch, as well as a maiden defeat in 2020 in Sydney."
+    ],
+    "evidence_doc": "Legacy vs ego: The Springboks are playing for South Africa, the All Blacks are playing for themselves",
+    "evidence_page": null,
+    "evidence_text": "It would seem that, as the Springboks play for their country, the All Blacks are playing for themselves as much as anyone – and the generation of players and leaders that will call time on their international careers at week’s end.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02427",
+    "query": "Who is the individual associated with the FTX exchange whose alleged fraudulent activities, as reported by Fortune and TechCrunch, not only led to a thriving crypto exchange built on misrepresentations but also involved instructions to misuse billions in customer funds and resulted in multiple charges of fraud and conspiracy, for which he has pleaded not guilty?",
+    "ground_truth": "Sam Bankman-Fried",
+    "evidence_docs": [
+      "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+      "SBF, riding high on FTX, reportedly offered $5B to Trump to cancel President re-run",
+      "SBF Trial: The latest updates from the FTX collapse’s courtroom drama",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "But “all of that, all of it, was built on lies,” Rehn declared to the jury.",
+      "SBF, as he’s known, has pleaded not-guilty to some seven charges of fraud and conspiracy.",
+      "The second week of the trial’s standout testimony came from Alameda Research’s former CEO Caroline Ellison, who claimed she took $14 billion from customers to repay debts to lenders, using them as a line of credit under the instruction of SBF.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+    "evidence_page": null,
+    "evidence_text": "But “all of that, all of it, was built on lies,” Rehn declared to the jury.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00840",
+    "query": "Does the Sporting News article attribute the Minnesota Vikings' poor performance after a 1-4 start to Danielle Hunter's high-level performance, while the CBSSports.com article credits the Vikings' defense, specifically their ability to limit downfield shots against tight ends, for the team's success?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "NFL awards odds: Six longshots bettors should consider for MVP, OPOY, DPOY and more",
+      "NFL Fantasy Football Week 6 Lineup Decisions: Starts, Sits, Sleepers, Busts to know for every game"
+    ],
+    "evidence_facts": [
+      "Not only has he produced at a high level, but his play has been instrumental in the Vikings turning things around after a 1-4 start.",
+      "But they've also seen the fourth-lowest ADOT from tight ends (5.0 yards per target), almost as if teams know they won't be able to succeed on downfield shots against them (zero completions of 20-plus yards from tight ends)."
+    ],
+    "evidence_doc": "NFL awards odds: Six longshots bettors should consider for MVP, OPOY, DPOY and more",
+    "evidence_page": null,
+    "evidence_text": "Not only has he produced at a high level, but his play has been instrumental in the Vikings turning things around after a 1-4 start.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01104",
+    "query": "Has the portrayal of the 'vampire cause' in Polygon articles changed between the November 9, 2023, article discussing the undermining of vampires' menacing air and the November 15, 2023, article highlighting vampires as a hidden presence in the best versions of stories?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "A field guide to the vampire authors who were probably vampires",
+      "The best surprise vampires in things you did not expect to see vampires"
+    ],
+    "evidence_facts": [
+      "Nothing serves the vampire cause less than undermining the air of looming menace that they’ve been cultivating since the 15th century.",
+      "In the best version, the vampires are always there, in the background, waiting for you to discover them — just like in real life."
+    ],
+    "evidence_doc": "A field guide to the vampire authors who were probably vampires",
+    "evidence_page": null,
+    "evidence_text": "Nothing serves the vampire cause less than undermining the air of looming menace that they’ve been cultivating since the 15th century.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00665",
+    "query": "Who is the individual recognized as a prodigy in Silicon Valley since his early twenties, known for showcasing a vision for AI agents at OpenAI's developer conference, and has been described by 'Fortune' and 'TechCrunch' as both brilliant and impactful in the industry as well as generous and caring, but is also suspected of not being fully truthful with the board?",
+    "ground_truth": "Sam Altman",
+    "evidence_docs": [
+      "OpenAI's ex-chairman accuses board of going rogue in firing Altman: 'Sam and I are shocked and saddened by what the board did'",
+      "Sam Altman ousted as OpenAI’s CEO",
+      "WTF is going on at OpenAI? We have theories"
+    ],
+    "evidence_facts": [
+      "At its first developer conference last week, Altman was the main speaker showcasing a vision for a future of AI agents that could help people with a variety of tasks.",
+      "While not trained as an AI engineer, Altman, now 38, has been seen as a Silicon Valley wunderkind since his early 20s.",
+      "More important than being one of the most brilliant and impactful people our industry has ever had Sam is one of the most generous and caring people I know.",
+      "Based on the board’s language and the way these giant tech companies work, this is the prevailing theory floating around right now."
+    ],
+    "evidence_doc": "OpenAI's ex-chairman accuses board of going rogue in firing Altman: 'Sam and I are shocked and saddened by what the board did'",
+    "evidence_page": null,
+    "evidence_text": "At its first developer conference last week, Altman was the main speaker showcasing a vision for a future of AI agents that could help people with a variety of tasks.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01259",
+    "query": "Does the article from Wired suggest that Sony headphones offer the best value in their class during the Walmart Cyber Monday Deals, while the article from Music Business Worldwide indicates that Artists are seeking deals that offer more control and better economics, or do both articles suggest a common trend in seeking value and control in their respective fields?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "These Are Our Favorite Walmart Cyber Monday Deals",
+      "‘Latin artists have been paving the way for deals that offer more control, transparency, and better economics.’"
+    ],
+    "evidence_facts": [
+      "With this sale, they offer some of the best value in their class from one of the top names in the business.",
+      "Beyond that, artists today are also much more conscious of their career trajectory and look for better deals, with more freedom, more transparency, and more options."
+    ],
+    "evidence_doc": "These Are Our Favorite Walmart Cyber Monday Deals",
+    "evidence_page": null,
+    "evidence_text": "With this sale, they offer some of the best value in their class from one of the top names in the business.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00331",
+    "query": "What company is at the center of claims involving manipulation of search results to maximize ad revenue according to Megan Grey in 'The Age', ranking local search results based on relevance, distance, and prominence as reported by 'The Verge', and is accused by a news publisher in a class action antitrust suit covered by 'TechCrunch' for harming their bottom line through anticompetitive practices?",
+    "ground_truth": "Google",
+    "evidence_docs": [
+      "Is Google Search better than the rest? And is that fair?",
+      "The restaurant nearest Google",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "She admits that she may have misinterpreted the evidence, but maintains that Google manipulates Search to maximise ad revenue.",
+      "Google’s public documentation says it uses three categories to rank results that are local to a searcher: relevance, distance, and prominence.",
+      "Wired removed the article for not meeting its standards, but the degree to which it was shared on social media and boosted in write-ups at other outlets shows just how willing people are to accept foul play on Google’s part.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "Is Google Search better than the rest? And is that fair?",
+    "evidence_page": null,
+    "evidence_text": "She admits that she may have misinterpreted the evidence, but maintains that Google manipulates Search to maximise ad revenue.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02307",
+    "query": "Who is the individual associated with FTX and Alameda Research that allegedly used customer funds to secure personal gains and simultaneously expressed to Paradigm a desire to establish an expert board for FTX while admitting challenges in managing the rapid expansion of both companies, as reported by Cnbc | World Business News Leader, The Verge, and TechCrunch?",
+    "ground_truth": "Sam Bankman-Fried",
+    "evidence_docs": [
+      "Sex, Signal messages, and sabotaging FTX's code: SBF execs and Bahamas roommates tell all in court",
+      "The jury finally hears from Sam Bankman-Fried",
+      "Sam Bankman-Fried was a terrible boyfriend",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "During cross-examination, Huang said Paradigm pressed Bankman-Fried on the board issue and was told he didn't want investors as directors but he did plan on having a board with experts.",
+      "Because FTX had grown so much, he could no longer run both companies, he said.",
+      "It was Bankman-Fried’s decision, she said, as he was the CEO of FTX.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "Sex, Signal messages, and sabotaging FTX's code: SBF execs and Bahamas roommates tell all in court",
+    "evidence_page": null,
+    "evidence_text": "During cross-examination, Huang said Paradigm pressed Bankman-Fried on the board issue and was told he didn't want investors as directors but he did plan on having a board with experts.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00076",
+    "query": "Does the article from Wired suggest that Sony headphones do not offer the best value in their class during the Walmart Cyber Monday Deals, while the article from Music Business Worldwide indicates that Artists are seeking deals that offer more control and better economics, or do both articles suggest a common trend in seeking value and control in their respective fields?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "These Are Our Favorite Walmart Cyber Monday Deals",
+      "‘Latin artists have been paving the way for deals that offer more control, transparency, and better economics.’"
+    ],
+    "evidence_facts": [
+      "With this sale, they offer some of the best value in their class from one of the top names in the business.",
+      "Beyond that, artists today are also much more conscious of their career trajectory and look for better deals, with more freedom, more transparency, and more options."
+    ],
+    "evidence_doc": "These Are Our Favorite Walmart Cyber Monday Deals",
+    "evidence_page": null,
+    "evidence_text": "With this sale, they offer some of the best value in their class from one of the top names in the business.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02517",
+    "query": "Which character in \"Only Murders in the Building,\" as reported by The New York Times, is a fan favorite for their quirky personality and, according to an article from Variety, is also suspected by other characters to be involved in the mystery at some point in the series?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01383",
+    "query": "Which individual, whose trial involving seven counts of fraud and conspiracy is covered by both Fortune and TechCrunch, is accused of using FTX customer funds to buy out Binance and is alleged by the prosecution to have committed these acts for wealth, power, and influence?",
+    "ground_truth": "Sam Bankman-Fried",
+    "evidence_docs": [
+      "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+      "SBF’s trial starts soon, but how did he — and FTX — get here?",
+      "Sam Bankman-Fried was a terrible boyfriend",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "That answer ultimately lies with the jury, which was selected on Wednesday morning before lawyers for the government and then Bankman-Fried swapped two very different stories of the former crypto mogul’s sudden rise and almost instantaneous fall.",
+      "The highly anticipated criminal trial for Sam Bankman-Fried, former CEO of bankrupt crypto exchange FTX, started Tuesday to determine whether he’s guilty of seven counts of fraud and conspiracy.",
+      "It was Bankman-Fried’s decision, she said, as he was the CEO of FTX.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+    "evidence_page": null,
+    "evidence_text": "That answer ultimately lies with the jury, which was selected on Wednesday morning before lawyers for the government and then Bankman-Fried swapped two very different stories of the former crypto mogul’s sudden rise and almost instantaneous fall.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01395",
+    "query": "What are the entities that not only provide introductory incentives to attract users but also modify their betting options for events and player awards based on news and public sentiment, as reported by the Sporting News?",
+    "ground_truth": "Sportsbooks",
+    "evidence_docs": [
+      "The Best NBA Betting Sites and Apps for the 2023-24 Season",
+      "Point Spread Betting - What is a Point Spread Bet?",
+      "NBA Rookie of the Year Odds - Wembanyama the early favorite"
+    ],
+    "evidence_facts": [
+      "From there, you can claim your welcome bonus, which can come in many forms (be sure to read the requirements of any welcome bonus before using it).",
+      "If a piece of news or a prevailing sentiment starts to gain traction about a particular team's increased chances of winning, this can influence how people bet, leading sportsbooks to adjust their lines accordingly.",
+      "But sportsbooks are also gathering this information, and they begin to tighten the NBA Rookie of the Year lines in response."
+    ],
+    "evidence_doc": "The Best NBA Betting Sites and Apps for the 2023-24 Season",
+    "evidence_page": null,
+    "evidence_text": "From there, you can claim your welcome bonus, which can come in many forms (be sure to read the requirements of any welcome bonus before using it).",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01113",
+    "query": "Who is the individual that, prior to being charged with fraud and conspiracy, was characterized as a reliable cryptocurrency figure by The Verge, convinced a colleague from Jane Street to join his ventures according to Fortune, and is accused by the prosecution of intentionally committing fraud for personal gain as reported by TechCrunch?",
+    "ground_truth": "Sam Bankman-Fried",
+    "evidence_docs": [
+      "The FTX trial is bigger than Sam Bankman-Fried",
+      "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+      "SBF, riding high on FTX, reportedly offered $5B to Trump to cancel President re-run",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "Before his fall, Bankman-Fried made himself out to be the Good Boy of crypto — the trustworthy face of a sometimes-shady industry.",
+      "And after Bankman-Fried left Jane Street, the high-frequency trading firm where the former billionaire got his start in finance after MIT, he persuaded Yedidia to join him as a trader at Alameda and then as a developer at FTX.",
+      "SBF, as he’s known, has pleaded not-guilty to some seven charges of fraud and conspiracy.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "The FTX trial is bigger than Sam Bankman-Fried",
+    "evidence_page": null,
+    "evidence_text": "Before his fall, Bankman-Fried made himself out to be the Good Boy of crypto — the trustworthy face of a sometimes-shady industry.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01265",
+    "query": "Which company, reported by TechCrunch, has both invested $26.3 billion to maintain its default search engine status across devices and platforms in 2021, and has been accused in a class action lawsuit of harming news publishers' revenues and readership through anticompetitive practices?",
+    "ground_truth": "Google",
+    "evidence_docs": [
+      "5 things we learned so far about the Google antitrust case",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "When Google’s search head Prabhakar Raghavan testified in court on October 28, he revealed that the tech giant had paid $26.3 billion in 2021 to multiple browsers, phones and platforms, from companies including Apple, Samsung and Mozilla, The Verge reports.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "5 things we learned so far about the Google antitrust case",
+    "evidence_page": null,
+    "evidence_text": "When Google’s search head Prabhakar Raghavan testified in court on October 28, he revealed that the tech giant had paid $26.3 billion in 2021 to multiple browsers, phones and platforms, from companies including Apple, Samsung and Mozilla, The Verge reports.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00521",
+    "query": "Which company, founded in late 2015 and known for its generative AI poster child behind ChatGPT, is anticipated by TechCrunch to promote an \"app store for AI\" as a primary platform and to release GPT-4 with vision alongside the GPT-4 Turbo API?",
+    "ground_truth": "OpenAI",
+    "evidence_docs": [
+      "8 predictions for AI in 2024",
+      "How the OpenAI fiasco could bolster Meta and the ‘open AI’ movement",
+      "How ego and fear fuelled the rise of artificial intelligence",
+      "ChatGPT: Everything you need to know about the AI-powered chatbot"
+    ],
+    "evidence_facts": [
+      "The “app store for AI” will be pushed hard as the platform to get your AI toys and tools from, and never mind Hugging Face or any open source models.",
+      "It has been a whirlwind four days for OpenAI, the generative AI poster child behind the smash hit ChatGPT.",
+      "OpenAI was founded in late 2015, just a few months after he met with Altman at the Rosewood hotel in Silicon Valley.",
+      "OpenAI announced that GPT-4 with vision will become available alongside the upcoming launch of GPT-4 Turbo API."
+    ],
+    "evidence_doc": "8 predictions for AI in 2024",
+    "evidence_page": null,
+    "evidence_text": "The “app store for AI” will be pushed hard as the platform to get your AI toys and tools from, and never mind Hugging Face or any open source models.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00714",
+    "query": "Considering the information from an article by The New York Times on recent Border Patrol strategies and a report by The Washington Post on Border Patrol resource allocation, which government official, identified by a single initial, is responsible for overseeing both the implementation of the new strategies and the distribution of resources?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01163",
+    "query": "Considering the information from a CNBC article detailing Garmin's latest earnings report and a Forbes article discussing Garmin's strategic partnerships, which letter, representing a stock market index, would Garmin's performance and collaborations most likely impact, as reported by these two sources?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00161",
+    "query": "Between the TechCrunch report on Sam Bankman-Fried's trial and the subsequent report by the same source on the prosecution's allegations against him, was there consistency in the portrayal of the charges he is facing?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+      "SBF’s trial starts soon, but how did he — and FTX — get here?",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "That answer ultimately lies with the jury, which was selected on Wednesday morning before lawyers for the government and then Bankman-Fried swapped two very different stories of the former crypto mogul’s sudden rise and almost instantaneous fall.",
+      "The highly anticipated criminal trial for Sam Bankman-Fried, former CEO of bankrupt crypto exchange FTX, started Tuesday to determine whether he’s guilty of seven counts of fraud and conspiracy.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+    "evidence_page": null,
+    "evidence_text": "That answer ultimately lies with the jury, which was selected on Wednesday morning before lawyers for the government and then Bankman-Fried swapped two very different stories of the former crypto mogul’s sudden rise and almost instantaneous fall.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01253",
+    "query": "Did CBSSports.com report on Kenneth Walker III's injury before Sporting News mentioned the absence of Tee Higgins, Noah Brown, Treylon Burks, and Kadarius Toney due to injuries?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "2023 NFL Week 11 injury roundup: Rams WR Cooper Kupp, Seahawks RB Kenneth Walker III among stars to exit",
+      "Fantasy Football WR PPR Rankings Week 13: Who to start, best sleepers at wide receiver"
+    ],
+    "evidence_facts": [
+      "Kenneth Walker III (Seahawks) took four carries against the Rams before leaving with an oblique injury.",
+      "Entering Week 12, Tee Higgins (hamstring), Noah Brown (knee), Treylon Burks (concussion), and Kadarius Toney (ankle, hip) all failed to suit up due to nagging injuries."
+    ],
+    "evidence_doc": "2023 NFL Week 11 injury roundup: Rams WR Cooper Kupp, Seahawks RB Kenneth Walker III among stars to exit",
+    "evidence_page": null,
+    "evidence_text": "Kenneth Walker III (Seahawks) took four carries against the Rams before leaving with an oblique injury.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00300",
+    "query": "Considering the information from an article in The New York Times about the film \"The First Time\" and a review from The Guardian discussing the standout performances, which actor, identified by both sources as having a breakthrough role in \"The First Time,\" shares their first name with a famous British naturalist?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01518",
+    "query": "Between the Engadget report on the Valve Steam Deck OLED published on November 9, 2023, at 18:00:32, and the Engadget review of the Valve Steam Deck OLED published on November 9, 2023, at 18:00:38, was the reporting on the release date of the new Steam Deck OLED consistent?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Steam Deck OLED review: It's just better",
+      "The Steam Deck OLED arrives November 16 with an improved screen and longer battery life"
+    ],
+    "evidence_facts": [
+      "The Steam Deck OLED will go on sale on November 16th at 1pm ET, and Valve has units ready to ship that same day.",
+      "Valve has announced a new Steam Deck and — double surprise — we’ve already reviewed it."
+    ],
+    "evidence_doc": "Steam Deck OLED review: It's just better",
+    "evidence_page": null,
+    "evidence_text": "The Steam Deck OLED will go on sale on November 16th at 1pm ET, and Valve has units ready to ship that same day.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00159",
+    "query": "Considering the information from an article in The Guardian about Heather Knight's performance in the recent series and an ESPN article discussing her career milestones, which team did Heather Knight score a century against in the series that also happens to be the same team she made her international debut against?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01506",
+    "query": "Considering the information from an article in The Economic Times and another in Business Standard about Nikhil Nanda, which company, known for its manufacturing in the agricultural sector, has Nanda as its managing director and also recently announced a collaboration with a Japanese firm to enhance technological advancements in their products?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00085",
+    "query": "Does 'The Age' article suggest that the co-founders of Anthropic made no attempt to remove Sam Altman from OpenAI, while the 'Fortune' article implies that Sam Altman's departure from OpenAI was unexpected and not initiated by him?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "How ego and fear fuelled the rise of artificial intelligence",
+      "OpenAI's ex-chairman accuses board of going rogue in firing Altman: 'Sam and I are shocked and saddened by what the board did'"
+    ],
+    "evidence_facts": [
+      "“There was no attempt to remove Sam Altman from OpenAI by the co-founders of Anthropic,” said an Anthropic spokesperson, Sally Aldous.",
+      "Altman’s exit “is indeed shocking as he has been the face of” generative AI technology, said Gartner analyst Arun Chandrasekaran."
+    ],
+    "evidence_doc": "How ego and fear fuelled the rise of artificial intelligence",
+    "evidence_page": null,
+    "evidence_text": "“There was no attempt to remove Sam Altman from OpenAI by the co-founders of Anthropic,” said an Anthropic spokesperson, Sally Aldous.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00312",
+    "query": "Does the CBSSports.com article claim that Caesars Sportsbook offers a different new customer bonus bet amount than the Sporting News article claims Caesars Sportsbook is expected to offer to new sign-ups in Vermont?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "2023 Kentucky online sports betting sites: Best legal sportsbooks, promos, bonuses, mobile apps, how to bet",
+      "Vermont Sportsbook Promos and Sports Betting Launch News"
+    ],
+    "evidence_facts": [
+      "New customers can get up to $1000 in bonus bets if they lose their first bet.",
+      "We expect Caesars to offer the same offer in VT is has elsewhere, with new sign-ups eligible to receive up to a $1,000 Bonus Bet if their first bet loses."
+    ],
+    "evidence_doc": "2023 Kentucky online sports betting sites: Best legal sportsbooks, promos, bonuses, mobile apps, how to bet",
+    "evidence_page": null,
+    "evidence_text": "New customers can get up to $1000 in bonus bets if they lose their first bet.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01672",
+    "query": "Does the TechCrunch article claim that Sam Bankman-Fried directed Caroline Ellison to use customer funds for debt repayment, while the Fortune article focuses on Sam Bankman-Fried's persuasion of Adam Yedidia to join his ventures, and does the second TechCrunch article allege that Sam Bankman-Fried's motivation for committing fraud was personal gain?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "SBF Trial: The latest updates from the FTX collapse’s courtroom drama",
+      "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "The second week of the trial’s standout testimony came from Alameda Research’s former CEO Caroline Ellison, who claimed she took $14 billion from customers to repay debts to lenders, using them as a line of credit under the instruction of SBF.",
+      "And after Bankman-Fried left Jane Street, the high-frequency trading firm where the former billionaire got his start in finance after MIT, he persuaded Yedidia to join him as a trader at Alameda and then as a developer at FTX.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "SBF Trial: The latest updates from the FTX collapse’s courtroom drama",
+    "evidence_page": null,
+    "evidence_text": "The second week of the trial’s standout testimony came from Alameda Research’s former CEO Caroline Ellison, who claimed she took $14 billion from customers to repay debts to lenders, using them as a line of credit under the instruction of SBF.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02250",
+    "query": "Who is the individual facing a criminal trial as reported by TechCrunch, whose alleged permissible withdrawal conditions to another trader were detailed by The Verge, and who, after an intervention by Judge Lewis Kaplan, admitted to being informed about a financial discrepancy, with the same source also alleging that this person committed fraud for personal gain?",
+    "ground_truth": "Sam Bankman-Fried",
+    "evidence_docs": [
+      "SBF’s trial starts soon, but how did he — and FTX — get here?",
+      "In the end, the FTX trial was about the friends screwed along the way",
+      "Sam Bankman-Fried didn’t ask where the $8 billion went",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "The highly anticipated criminal trial for Sam Bankman-Fried, former CEO of bankrupt crypto exchange FTX, started Tuesday to determine whether he’s guilty of seven counts of fraud and conspiracy.",
+      "Wang testified that he heard Bankman-Fried tell another trader that it was okay to continue withdrawing money from the account as long as the amount was less than FTX’s total trading revenue.",
+      "It was not until Judge Lewis Kaplan intervened to ask if Bankman-Fried had ever been told by Yedidia about that money, in words or in substance, that Bankman-Fried admitted he’d been told.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "SBF’s trial starts soon, but how did he — and FTX — get here?",
+    "evidence_page": null,
+    "evidence_text": "The highly anticipated criminal trial for Sam Bankman-Fried, former CEO of bankrupt crypto exchange FTX, started Tuesday to determine whether he’s guilty of seven counts of fraud and conspiracy.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02537",
+    "query": "Has the stance of the Federal Reserve on interest rates as reported by The Sydney Morning Herald remained the same between the article published on October 1, 2023, suggesting smaller future rate cuts, and the one from November 5, 2023, indicating a continuation of rate increases?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "ASX set to open lower as Wall Street closes September with more losses",
+      "ASX to rise after interest rate hopes boost US shares"
+    ],
+    "evidence_facts": [
+      "The Fed’s main interest rate is at its highest level since 2001, and the central bank indicated last week it may cut interest rates next year by less than it earlier expected.",
+      "Stocks surged through the week on rising hopes that the Federal Reserve is finally done with its market-crunching hikes to interest rates, in order to get inflation under control."
+    ],
+    "evidence_doc": "ASX set to open lower as Wall Street closes September with more losses",
+    "evidence_page": null,
+    "evidence_text": "The Fed’s main interest rate is at its highest level since 2001, and the central bank indicated last week it may cut interest rates next year by less than it earlier expected.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00158",
+    "query": "Considering the information from an ESPN article discussing Ross Atkins' strategy for player acquisition and a Sports Illustrated piece analyzing his approach to team development, which position, represented by a single character, did Ross Atkins prioritize strengthening during the off-season?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01633",
+    "query": "After the report by Business Today | Latest Stock Market And Economy News India on October 7, 2023, regarding a surprise attack on Israel, and the subsequent report by Fortune on October 13, 2023, concerning the blockade of Gaza and the warning issued to residents, is the sequence of events reported by both news sources regarding Israel's security and humanitarian situation consistent?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Israel's blockade of Gaza means that a region the size of Philadelphia faces a real risk of starvation, says Peace Studies scholar",
+      "'Massive intel failure by Mossad': Hamas' surprise attack on Israel shocks internet"
+    ],
+    "evidence_facts": [
+      "On Oct. 12, 2023, Israel warned 1.1 million Gaza residents in the northern section of the enclave to leave for the southern region, in advance of a potential ground invasion.",
+      "Another user said that no one can carry out such a major attack against Israel without intelligence support."
+    ],
+    "evidence_doc": "Israel's blockade of Gaza means that a region the size of Philadelphia faces a real risk of starvation, says Peace Studies scholar",
+    "evidence_page": null,
+    "evidence_text": "On Oct. 12, 2023, Israel warned 1.1 million Gaza residents in the northern section of the enclave to leave for the southern region, in advance of a potential ground invasion.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01121",
+    "query": "Which company is at the center of allegations involving manipulation of search results to maximize ad revenue according to 'The Age', is likely to win a legal case about phones and app stores if the market is defined broadly as per 'The Verge', was deemed the only valid search engine service option by 'Apple' as reported by 'The Verge', and is accused of using anticompetitive practices to harm news publishers' financial interests as per 'TechCrunch'?",
+    "ground_truth": "Google",
+    "evidence_docs": [
+      "Is Google Search better than the rest? And is that fair?",
+      "Epic v. Google, explained",
+      "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "She admits that she may have misinterpreted the evidence, but maintains that Google manipulates Search to maximise ad revenue.",
+      "This whole line of argument is called “market definition.” If the court decides the relevant market is phones and app stores, not specifically Android ones, then Google’s on the road to victory.",
+      "“Certainly there wasn’t a valid alternative to Google at the time,” Cue said.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "Is Google Search better than the rest? And is that fair?",
+    "evidence_page": null,
+    "evidence_text": "She admits that she may have misinterpreted the evidence, but maintains that Google manipulates Search to maximise ad revenue.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01242",
+    "query": "After the report by The Verge on October 20, 2023, about Ray-Ban Meta smart glasses and the lifestyle of TikTok users, did the Music Business Worldwide report on November 21, 2023, maintain consistency regarding the behavior of TikTok users in relation to music streaming services?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "62% of TikTok users in the United States pay for a music streaming service (report)",
+      "The Ray-Ban Meta smart glasses actually make the future look cool"
+    ],
+    "evidence_facts": [
+      "The study also found that the TikTok audience can be an effective marketing tool for artists, as TikTok users, in particular, are considerably more likely to discover and share music than overall social media and short video platform (SFV) users.",
+      "Every time I open TikTok, I see normal people and content creators alike vlogging their lives."
+    ],
+    "evidence_doc": "62% of TikTok users in the United States pay for a music streaming service (report)",
+    "evidence_page": null,
+    "evidence_text": "The study also found that the TikTok audience can be an effective marketing tool for artists, as TikTok users, in particular, are considerably more likely to discover and share music than overall social media and short video platform (SFV) users.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01933",
+    "query": "Considering the information from a Bloomberg article discussing the release date of the latest Apple MacBook Pro and a CNET article detailing the new features of the same device, which letter represents the first character of the feature that is both newly introduced in the latest model according to CNET and is specifically mentioned as being anticipated prior to the release date in the Bloomberg article?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00339",
+    "query": "Between the report by The Verge on Apple's defense of its Google Search deal published on September 26, 2023, and the report by TechCrunch on the class action antitrust suit against Google published on December 15, 2023, was there a change in the portrayal of Google's business practices with other companies?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+      "Early impressions of Google’s Gemini aren’t great",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "The Justice Department is focused on the deals Google makes — with Apple but also with Samsung and Mozilla and many others — to ensure it is the default search engine on practically every platform.",
+      "Google compared the performance of Gemini Pro to GPT-4’s predecessor, GPT-3.5, a model that’s around a year old.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+    "evidence_page": null,
+    "evidence_text": "The Justice Department is focused on the deals Google makes — with Apple but also with Samsung and Mozilla and many others — to ensure it is the default search engine on practically every platform.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01140",
+    "query": "Considering the information from a BBC News article detailing TomTom's latest strategic partnership and a Reuters report on TomTom's financial performance in the last quarter, which European country, home to TomTom's headquarters, is both the location of the new strategic partner's primary operations and also where TomTom reported a significant increase in consumer sales?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00260",
+    "query": "Did 'Sport Grill' report on Tessa Wullaert missing a decisive penalty before 'The Roar | Sports Writers Blog' reported on Cole Palmer scoring a penalty to secure a draw for Chelsea?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "Wullaert Fires Belgium to 3-2 Home Win over England In UEFA Women’s Nations League",
+      "City old boy has final say for Chelsea in eight-goal thriller, supreme Salah leads Liverpool surge"
+    ],
+    "evidence_facts": [
+      "Wullaert equalised for Belgium in first-half injury time before she took advantage of Georgia Stanway’s handball to fire in a 85th minute winning penalty.",
+      "Former Manchester City player Cole Palmer has scored a penalty in the fifth minute of stoppage time as Chelsea came back to claim a 4-4 with the defending Premier League champions in a stunning match at Stamford Bridge."
+    ],
+    "evidence_doc": "Wullaert Fires Belgium to 3-2 Home Win over England In UEFA Women’s Nations League",
+    "evidence_page": null,
+    "evidence_text": "Wullaert equalised for Belgium in first-half injury time before she took advantage of Georgia Stanway’s handball to fire in a 85th minute winning penalty.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00092",
+    "query": "Does the Fortune article attribute the cause of the worst war in Israel in 50 years to actions taken by Israel, while the TechCrunch article focuses on Paddy Cosgrave's public fight regarding the support for Israel in the conflict?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "Gen Z just saw the worst war in Israel in 50 years break out all over the internet, but they were raised on 'disturbing images'",
+      "WebSummit derailed by founder’s public fight with those supporting Israel in Hamas conflict"
+    ],
+    "evidence_facts": [
+      "On Saturday, the Islamic militant group Hamas launched an unprecedented attack on Israel, resulting in the worst war the region has seen in 50 years.",
+      "Founders, investors and others from the technology community in Israel have gone ballistic over comments made by the founder and figurehead of Web Summit, Paddy Cosgrave, related to the fighting underway across Israel and Gaza, specifically his criticism of Israel’s retaliatory actions."
+    ],
+    "evidence_doc": "Gen Z just saw the worst war in Israel in 50 years break out all over the internet, but they were raised on 'disturbing images'",
+    "evidence_page": null,
+    "evidence_text": "On Saturday, the Islamic militant group Hamas launched an unprecedented attack on Israel, resulting in the worst war the region has seen in 50 years.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01488",
+    "query": "Considering the information from a New York Times article discussing Meta Platforms' financial performance and a Wall Street Journal report on the company's strategic shifts, which single letter represents both the beginning of the CEO's first name and the first letter of the product that Meta is heavily investing in as part of its future growth strategy?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00982",
+    "query": "Between the report from The Verge on November 5, 2023, regarding the Epic v. Google case and the report from TechCrunch on December 15, 2023, about the class action antitrust suit filed against Google by a news publisher, is there inconsistency in the portrayal of Google's market practices as described by these news sources?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "Epic v. Google, explained",
+      "Early impressions of Google’s Gemini aren’t great",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "This whole line of argument is called “market definition.” If the court decides the relevant market is phones and app stores, not specifically Android ones, then Google’s on the road to victory.",
+      "In blog posts and press materials, Google touted Gemini’s superior architecture and capabilities, claiming that the model meets or exceeds the performance of other leading gen AI models like OpenAI’s GPT-4.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "Epic v. Google, explained",
+    "evidence_page": null,
+    "evidence_text": "This whole line of argument is called “market definition.” If the court decides the relevant market is phones and app stores, not specifically Android ones, then Google’s on the road to victory.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01949",
+    "query": "Does the TechCrunch article suggest that Sam Bankman-Fried's actions were driven by personal motives, in contrast to the Cnbc | World Business News Leader article which discusses his intentions regarding the structure of FTX's board?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier",
+      "Sex, Signal messages, and sabotaging FTX's code: SBF execs and Bahamas roommates tell all in court"
+    ],
+    "evidence_facts": [
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head.",
+      "During cross-examination, Huang said Paradigm pressed Bankman-Fried on the board issue and was told he didn't want investors as directors but he did plan on having a board with experts."
+    ],
+    "evidence_doc": "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier",
+    "evidence_page": null,
+    "evidence_text": "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01756",
+    "query": "Who is the individual that presented themselves as a trustworthy figure in the cryptocurrency industry, as reported by The Verge, but is also alleged by the prosecution in a TechCrunch article to have committed fraud, and according to The Verge, informed another trader about permissible withdrawals from an account tied to a now-collapsed company and also admitted to being aware of a financial discrepancy after a judge's intervention?",
+    "ground_truth": "Sam Bankman-Fried",
+    "evidence_docs": [
+      "In the end, the FTX trial was about the friends screwed along the way",
+      "The FTX trial is bigger than Sam Bankman-Fried",
+      "Sam Bankman-Fried didn’t ask where the $8 billion went",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "Wang testified that he heard Bankman-Fried tell another trader that it was okay to continue withdrawing money from the account as long as the amount was less than FTX’s total trading revenue.",
+      "Before his fall, Bankman-Fried made himself out to be the Good Boy of crypto — the trustworthy face of a sometimes-shady industry.",
+      "It was not until Judge Lewis Kaplan intervened to ask if Bankman-Fried had ever been told by Yedidia about that money, in words or in substance, that Bankman-Fried admitted he’d been told.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "In the end, the FTX trial was about the friends screwed along the way",
+    "evidence_page": null,
+    "evidence_text": "Wang testified that he heard Bankman-Fried tell another trader that it was okay to continue withdrawing money from the account as long as the amount was less than FTX’s total trading revenue.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02047",
+    "query": "Does the article from The Verge suggest that a GameStop gift card is a universally useless gift for gamers regardless of console preference, while the Polygon article recommends specific Nintendo Switch games, indicating a more targeted gift approach for owners of that console?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "Here are over 40 last-minute gifts you can still nab before Christmas",
+      "6 games to play first on your new Nintendo Switch"
+    ],
+    "evidence_facts": [
+      "Alternatively, you could buy a gift card to a store like GameStop (Amazon, GameStop), which is useful if you don’t know which console your giftee prefers or want to give them the option of buying accessories and games.",
+      "Luckily, we’ve got six recommendations, ranging from modern Nintendo classics (that you can’t play on any non-Nintendo console) to indie games that are perfect for the Switch."
+    ],
+    "evidence_doc": "Here are over 40 last-minute gifts you can still nab before Christmas",
+    "evidence_page": null,
+    "evidence_text": "Alternatively, you could buy a gift card to a store like GameStop (Amazon, GameStop), which is useful if you don’t know which console your giftee prefers or want to give them the option of buying accessories and games.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02130",
+    "query": "What type of businesses, frequently featured in Sporting News articles, are known to manipulate betting lines to manage their financial risk and ensure profitability, regardless of the event outcomes or where large sums of money are wagered?",
+    "ground_truth": "Sportsbooks",
+    "evidence_docs": [
+      "Line Shopping in Sports Betting - How to Find the Best Odds",
+      "Moneyline Betting - What is the Moneyline and How Does it Work?",
+      "NBA Rookie of the Year Odds - Wembanyama the early favorite"
+    ],
+    "evidence_facts": [
+      "That allows sportsbooks to earn the profit built into the odds and lines without worrying about which side wins.",
+      "If a significant amount of money is being placed on one team or participant, sportsbooks might adjust the odds to balance their liability.",
+      "But sportsbooks are also gathering this information, and they begin to tighten the NBA Rookie of the Year lines in response."
+    ],
+    "evidence_doc": "Line Shopping in Sports Betting - How to Find the Best Odds",
+    "evidence_page": null,
+    "evidence_text": "That allows sportsbooks to earn the profit built into the odds and lines without worrying about which side wins.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01248",
+    "query": "Did the report from The Verge on Apple's defense of its Google Search deal published on September 25, 2023, and the TechCrunch article detailing what was learned about the Google antitrust case involving Apple published on October 31, 2023, show a consistency in the portrayal of Apple's actions regarding its choice of search engine and browser options for iPhone users?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "5 things we learned so far about the Google antitrust case",
+      "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+      "Tim Sweeney on Epic’s victory royale over Google"
+    ],
+    "evidence_facts": [
+      "The agreement also meant that Apple never switched to a Google competitor or allowed users to choose their browser when setting up their iPhones.",
+      "Cue had two messages: Apple believes in protecting its users’ privacy, and it also believes in Google.",
+      "They use their store, their payments, they force developers to all have the same terms, they force OEMs and carriers to all have the same terms."
+    ],
+    "evidence_doc": "5 things we learned so far about the Google antitrust case",
+    "evidence_page": null,
+    "evidence_text": "The agreement also meant that Apple never switched to a Google competitor or allowed users to choose their browser when setting up their iPhones.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00406",
+    "query": "Does 'The Sydney Morning Herald' suggest that the US economy is at an optimal slowing pace to avoid a recession, in contrast to 'The Age' which implies that a government shutdown could increase the risk of a recession in the US economy?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "ASX set for bright start despite Wall Street slip; $A drops",
+      "ASX set to open higher as Wall Street rebounds; $A rises"
+    ],
+    "evidence_facts": [
+      "Hope has been rising on Wall Street recently that the US economy is slowing from its recent hot pace by just the right amount.",
+      "A shutdown would drag on the US economy, raising the risk of a recession, though financial markets have held up relatively well through past shutdowns."
+    ],
+    "evidence_doc": "ASX set for bright start despite Wall Street slip; $A drops",
+    "evidence_page": null,
+    "evidence_text": "Hope has been rising on Wall Street recently that the US economy is slowing from its recent hot pace by just the right amount.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02434",
+    "query": "Who is the individual associated with FTX and Alameda, who allegedly used deceit to build a thriving crypto exchange, convinced a former Jane Street colleague to join his ventures, and is accused of misappropriating $1 billion of customer funds as well as committing fraud for personal gain, and has been discussed in articles by Fortune, The Verge, and TechCrunch?",
+    "ground_truth": "Sam Bankman-Fried",
+    "evidence_docs": [
+      "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+      "Sam Bankman-Fried was a terrible boyfriend",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "But “all of that, all of it, was built on lies,” Rehn declared to the jury.",
+      "And after Bankman-Fried left Jane Street, the high-frequency trading firm where the former billionaire got his start in finance after MIT, he persuaded Yedidia to join him as a trader at Alameda and then as a developer at FTX.",
+      "It was Bankman-Fried’s decision, she said, as he was the CEO of FTX.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+    "evidence_page": null,
+    "evidence_text": "But “all of that, all of it, was built on lies,” Rehn declared to the jury.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00920",
+    "query": "Who is the individual implicated in the FTX collapse, accused of directing a $14 billion misuse of customer funds for debt repayment, utilizing a colleague as a facade for unauthorized access to these funds, and facing allegations of intentional fraud for personal gain according to reports from TechCrunch and Fortune?",
+    "ground_truth": "Sam Bankman-Fried",
+    "evidence_docs": [
+      "SBF Trial: The latest updates from the FTX collapse’s courtroom drama",
+      "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "The second week of the trial’s standout testimony came from Alameda Research’s former CEO Caroline Ellison, who claimed she took $14 billion from customers to repay debts to lenders, using them as a line of credit under the instruction of SBF.",
+      "Using Caroline Ellison, his on-again off-again girlfriend and the CEO of Alameda, as a front, Bankman-Fried had “secret access” to customer money—both cash and crypto—the government claimed.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "SBF Trial: The latest updates from the FTX collapse’s courtroom drama",
+    "evidence_page": null,
+    "evidence_text": "The second week of the trial’s standout testimony came from Alameda Research’s former CEO Caroline Ellison, who claimed she took $14 billion from customers to repay debts to lenders, using them as a line of credit under the instruction of SBF.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00961",
+    "query": "Has the focus of the European Commission's involvement reported by TechCrunch changed from addressing competition concerns in Amazon's iRobot purchase to facilitating dialogue and assessing issues with Meta's ad-free subscription service to probing Elon Musk's X over illegal content risks and moderation practices?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "European consumer groups band together to fight Meta’s self-serving ad-free sub — branding it ‘unfair’ and ‘illegal’",
+      "Amazon’s iRobot purchase sucks up formal competition concerns in EU",
+      "Elon Musk’s X faces first DSA probe in EU over illegal content risks, moderation, transparency and deceptive UX design"
+    ],
+    "evidence_facts": [
+      "The process also loops in the European Commission to help facilitate dialogue, assess issues and bring pressure to bear on unfair practices.",
+      "We continue to work through the process with the European Commission and are focused on addressing its questions and any identified concerns at this stage.",
+      "Its earlier actions were focused on concerns about the spread of illegal content and disinformation related to the Israel-Hamas war."
+    ],
+    "evidence_doc": "European consumer groups band together to fight Meta’s self-serving ad-free sub — branding it ‘unfair’ and ‘illegal’",
+    "evidence_page": null,
+    "evidence_text": "The process also loops in the European Commission to help facilitate dialogue, assess issues and bring pressure to bear on unfair practices.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00338",
+    "query": "Does the Yahoo News article praise the Biden administration's effectiveness on climate issues, while the Engadget article suggests that society is being positively impacted by the interconnectedness of climate change, the modern internet, and authoritarianism?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "A scientist reckons with climate grief",
+      "Hitting the Books: We are the frogs in the boiling pot, it's time we started governing like it."
+    ],
+    "evidence_facts": [
+      "Kalmus, 49, thinks civilization is on the path to break down, the Biden administration is clueless on climate, and that he might get fired from his job at NASA if he is arrested for a third time protesting what he views as downright madness: the continued use of fossil fuels.",
+      "In the excerpt below, contributing author and Assistant Professor of Environment and Sustainability at the University at Buffalo, Holly Jean Buck, explores how accelerating climate change, the modern internet and authoritarianism's recent renaissance are influencing and amplifying one another's negative impacts, to the detriment of us all."
+    ],
+    "evidence_doc": "A scientist reckons with climate grief",
+    "evidence_page": null,
+    "evidence_text": "Kalmus, 49, thinks civilization is on the path to break down, the Biden administration is clueless on climate, and that he might get fired from his job at NASA if he is arrested for a third time protesting what he views as downright madness: the continued use of fossil fuels.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01455",
+    "query": "What group of people can utilize the options provided by team golf events to place bets on outcomes or engage in prop betting, and also capitalize on the hype generated around events to potentially profit, as reported by Sporting News?",
+    "ground_truth": "Bettors",
+    "evidence_docs": [
+      "Best Golf Betting Sites and Apps - Top Sportsbooks for Golf 2023",
+      "FanDuel 'Prop Stars' Picks: Best bets for Travis Kelce & Taylor Swift-inspired props for Chiefs-Jets Week 4"
+    ],
+    "evidence_facts": [
+      "Bettors can choose from various options: betting on the winning team, outcomes of individual matches, or prop bets such as which team scores highest in a round, who makes more birdies, or even the best-dressed team captain.",
+      "For bettors, where there is hype, there's also an opportunity to make some money."
+    ],
+    "evidence_doc": "Best Golf Betting Sites and Apps - Top Sportsbooks for Golf 2023",
+    "evidence_page": null,
+    "evidence_text": "Bettors can choose from various options: betting on the winning team, outcomes of individual matches, or prop bets such as which team scores highest in a round, who makes more birdies, or even the best-dressed team captain.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00895",
+    "query": "Considering the information from a Forbes article detailing the philanthropic efforts of the PayPal Mafia and a Bloomberg piece discussing the business ventures of the same group post-PayPal, which member of the PayPal Mafia, known for his investments in space exploration according to Forbes, also founded a financial services company that Bloomberg credits with revolutionizing online payments?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01176",
+    "query": "Considering an ESPN article detailing the Cleveland Browns' recent draft picks and a Sports Illustrated report on the team's free agency signings, which player, represented by the initial \"M,\" was both drafted by the Browns and later mentioned as a key free agent acquisition?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00321",
+    "query": "Which company, featured in articles from both Wired and Cnbc | World Business News Leader, introduced an invite-only deal system during a summer event for its members and is also considered to provide a life-changing opportunity for its sellers?",
+    "ground_truth": "Amazon",
+    "evidence_docs": [
+      "78 Absolute Best October Prime Day Deals (2023)",
+      "Amazon sellers sound off on the FTC's 'long-overdue' antitrust case"
+    ],
+    "evidence_facts": [
+      "During Prime Day this past summer, Amazon introduced invite-only deals—a system to help make it easier for Prime members to access deals that are expected to sell out quickly—and the company brought it back for Prime Big Deal Days.",
+      "“Selling on Amazon is a life-changing opportunity and the amount of sellers that throw stones at the platform is astounding,” one user wrote."
+    ],
+    "evidence_doc": "78 Absolute Best October Prime Day Deals (2023)",
+    "evidence_page": null,
+    "evidence_text": "During Prime Day this past summer, Amazon introduced invite-only deals—a system to help make it easier for Prime members to access deals that are expected to sell out quickly—and the company brought it back for Prime Big Deal Days.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01186",
+    "query": "Who is the individual that, according to articles from The Verge, Fortune, and TechCrunch, used FTX customer funds to secure a buyout, recruited a colleague from Jane Street for ventures at Alameda and FTX, and is facing allegations of committing fraud for personal gain?",
+    "ground_truth": "Sam Bankman-Fried",
+    "evidence_docs": [
+      "Sam Bankman-Fried was a terrible boyfriend",
+      "Is Sam Bankman-Fried a bad ‘man’ or a good ‘boy’? Lawyers swap opening statements before first witnesses take the stand",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "It was Bankman-Fried’s decision, she said, as he was the CEO of FTX.",
+      "And after Bankman-Fried left Jane Street, the high-frequency trading firm where the former billionaire got his start in finance after MIT, he persuaded Yedidia to join him as a trader at Alameda and then as a developer at FTX.",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "Sam Bankman-Fried was a terrible boyfriend",
+    "evidence_page": null,
+    "evidence_text": "It was Bankman-Fried’s decision, she said, as he was the CEO of FTX.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02227",
+    "query": "Does the article from The Verge suggest that a GameStop gift card is a universally useful gift for gamers regardless of console preference, while the Polygon article recommends specific Nintendo Switch games, indicating a more targeted gift approach for owners of that console?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Here are over 40 last-minute gifts you can still nab before Christmas",
+      "6 games to play first on your new Nintendo Switch"
+    ],
+    "evidence_facts": [
+      "Alternatively, you could buy a gift card to a store like GameStop (Amazon, GameStop), which is useful if you don’t know which console your giftee prefers or want to give them the option of buying accessories and games.",
+      "Luckily, we’ve got six recommendations, ranging from modern Nintendo classics (that you can’t play on any non-Nintendo console) to indie games that are perfect for the Switch."
+    ],
+    "evidence_doc": "Here are over 40 last-minute gifts you can still nab before Christmas",
+    "evidence_page": null,
+    "evidence_text": "Alternatively, you could buy a gift card to a store like GameStop (Amazon, GameStop), which is useful if you don’t know which console your giftee prefers or want to give them the option of buying accessories and games.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02502",
+    "query": "Between the TechCrunch report on Sam Bankman-Fried's trial published on October 1, 2023, and the TechCrunch report on the allegations against Sam Bankman-Fried published on October 7, 2023, was there consistency in the portrayal of Sam Bankman-Fried's actions related to the FTX collapse?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "SBF Trial: The latest updates from the FTX collapse’s courtroom drama",
+      "SBF’s trial starts soon, but how did he — and FTX — get here?",
+      "Sam Altman backs teens’ startup, Google unveils the Pixel 8 and TikTok tests an ad-free tier"
+    ],
+    "evidence_facts": [
+      "The second week of the trial’s standout testimony came from Alameda Research’s former CEO Caroline Ellison, who claimed she took $14 billion from customers to repay debts to lenders, using them as a line of credit under the instruction of SBF.",
+      "Bankman-Fried was even compared to Warren Buffet and many called him the white horse of crypto (TechCrunch never did, for what it’s worth).",
+      "The prosecution painted Bankman-Fried as someone who knowingly committed fraud to achieve great wealth, power and influence, while the defense countered that the FTX founder acted in good faith, never meant to commit fraud or steal and basically got in over his head."
+    ],
+    "evidence_doc": "SBF Trial: The latest updates from the FTX collapse’s courtroom drama",
+    "evidence_page": null,
+    "evidence_text": "The second week of the trial’s standout testimony came from Alameda Research’s former CEO Caroline Ellison, who claimed she took $14 billion from customers to repay debts to lenders, using them as a line of credit under the instruction of SBF.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00712",
+    "query": "Does the TechCrunch article suggest that Google is engaging in anticompetitive behavior towards news publishers, while the article from The Verge implies that Google has the capability to resolve issues, and another TechCrunch article claims that Google has no plans to implement additional measures on YouTube, indicating differing levels of responsibility or initiative attributed to Google by each source?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Deepfake election risks trigger EU call for more generative AI safeguards",
+      "Tim Sweeney on Epic’s victory royale over Google",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "Over the next six months Google’s report states it has no additional measures planned for YouTube.",
+      "For all the other benefits they get from Android, Google could solve this problem today if they wanted to.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "Deepfake election risks trigger EU call for more generative AI safeguards",
+    "evidence_page": null,
+    "evidence_text": "Over the next six months Google’s report states it has no additional measures planned for YouTube.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00629",
+    "query": "Does 'The Roar | Sports Writers Blog' suggest that 'The All Blacks' motivation for playing is different from the Springboks' as per the first article, while also indicating that 'The All Blacks' handling was compromised by external factors in the second article, and does it confirm 'The All Blacks' losses to Argentina as stated in the third article?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Legacy vs ego: The Springboks are playing for South Africa, the All Blacks are playing for themselves",
+      "THE GREATEST! Boks beat All Blacks in instant classic to claim record FOURTH RWC in controversial, dramatic final",
+      "‘It happens’: All Blacks defend star centre after spray as Cheika heaps pressure on ‘favourites’ New Zealand"
+    ],
+    "evidence_facts": [
+      "It would seem that, as the Springboks play for their country, the All Blacks are playing for themselves as much as anyone – and the generation of players and leaders that will call time on their international careers at week’s end.",
+      "The All Blacks had their chances, but their usual safe handling, a feature throughout the World Cup after their first-up loss to France, evaded them against the Springboks’ blitz defence in the wet conditions.",
+      "It comes despite Argentina knocking over the All Blacks last year in Christchurch, as well as a maiden defeat in 2020 in Sydney."
+    ],
+    "evidence_doc": "Legacy vs ego: The Springboks are playing for South Africa, the All Blacks are playing for themselves",
+    "evidence_page": null,
+    "evidence_text": "It would seem that, as the Springboks play for their country, the All Blacks are playing for themselves as much as anyone – and the generation of players and leaders that will call time on their international careers at week’s end.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01806",
+    "query": "Does 'The Guardian' article about the 'Everton team' suggest they are in a worse position in the Premier League compared to 'Bayern Munich' as discussed in another 'The Guardian' article, based on their respective league standings and points?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Everton players and fans will be fired up by points penalty, asserts Sean Dyche",
+      "European football: Eintracht Frankfurt hit Bayern for five in famous thrashing"
+    ],
+    "evidence_facts": [
+      "Dyche, however, wants his team to forget about the appeal and accept the reality of being joint-bottom of the Premier League on four points.",
+      "Bayern, who have a game in hand after last week’s game against Union Berlin was postponed due to snow, remain in second place on 32 points, with the leaders, Bayer Leverkusen, on 35, travelling to third-placed VfB Stuttgart, who have 30 points, on Sunday."
+    ],
+    "evidence_doc": "Everton players and fans will be fired up by points penalty, asserts Sean Dyche",
+    "evidence_page": null,
+    "evidence_text": "Dyche, however, wants his team to forget about the appeal and accept the reality of being joint-bottom of the Premier League on four points.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00646",
+    "query": "Does the article from The Verge claim that Google lacks the ability to resolve issues with Android app distribution and in-app payment systems, while the TechCrunch articles, one discussing Google's Gemini and the other an antitrust suit, both portray Google's actions or products in a positive light?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "Tim Sweeney on Epic’s victory royale over Google",
+      "Early impressions of Google’s Gemini aren’t great",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "For all the other benefits they get from Android, Google could solve this problem today if they wanted to.",
+      "Google compared the performance of Gemini Pro to GPT-4’s predecessor, GPT-3.5, a model that’s around a year old.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "Tim Sweeney on Epic’s victory royale over Google",
+    "evidence_page": null,
+    "evidence_text": "For all the other benefits they get from Android, Google could solve this problem today if they wanted to.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02245",
+    "query": "Do 'The Verge' and 'Engadget' articles both suggest that 'Consumers' can find guidance or deals on tech products, while the 'TechCrunch' article proposes a different interest of 'Consumers' in the realm of social networking?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Here are the best deals on headphones and wireless earbuds we could find",
+      "The best Apple Black Friday deals on iPads, AirPods, Apple Watches and more",
+      "Why Mozilla is betting on a decentralized social networking future"
+    ],
+    "evidence_facts": [
+      "And if you want to do even more research before making a buying decision, we’ve put together guides to the best wireless earbuds and best noise-canceling headphones, which can help you determine which pair is right for you.",
+      "That means if you were otherwise occupied on Friday, you can still save on iPads, Apple Watches, MacBooks, AirPods and more.",
+      "Consumers are hungry for a new way of social networking, where trust and safety are paramount and power isn’t centralized with a Big Tech CEO in charge… or at least that’s what Mozilla believes."
+    ],
+    "evidence_doc": "Here are the best deals on headphones and wireless earbuds we could find",
+    "evidence_page": null,
+    "evidence_text": "And if you want to do even more research before making a buying decision, we’ve put together guides to the best wireless earbuds and best noise-canceling headphones, which can help you determine which pair is right for you.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01473",
+    "query": "Has the reporting on the involvement of individuals in their respective football teams by Sporting News remained consistent between the article discussing Cameron Carter-Vickers' debut for Celtic after a hamstring injury (published at '2023-10-04T22:42:00+00:00') and the article detailing Daniel Garnero's debut as the new permanent manager of the Paraguay national football team 30 minutes before kickoff (published at '2023-10-12T23:22:00+00:00')?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "USA squad for October friendlies 2023: USMNT roster for friendly matches vs Germany, Ghana",
+      "Argentina vs Paraguay live score, result, updates, highlights from CONMEBOL World Cup qualifying"
+    ],
+    "evidence_facts": [
+      "Also included is defender Cameron Carter-Vickers who only just made his debut for Celtic this season thanks to a hamstring injury.",
+      "30 mins to kickoff: Paraguay have a new manager, as Daniel Garnero makes his debut as the new permanent boss."
+    ],
+    "evidence_doc": "USA squad for October friendlies 2023: USMNT roster for friendly matches vs Germany, Ghana",
+    "evidence_page": null,
+    "evidence_text": "Also included is defender Cameron Carter-Vickers who only just made his debut for Celtic this season thanks to a hamstring injury.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00862",
+    "query": "Considering the information from a BBC article detailing the expansion of M-Pesa's services into new markets and a Reuters report on the impact of M-Pesa on the local economy in one of its established markets, which single letter represents the currency symbol for the country where M-Pesa first launched its mobile money services?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01476",
+    "query": "Between the report from The Verge on Google's impact on the internet's appearance published on November 1, 2023, and the report from TechCrunch on a class action antitrust suit against Google published later, was there a change in the portrayal of Google's influence on the digital ecosystem?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "The people who ruined the internet",
+      "Epic v. Google, explained",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "The company did accomplish that goal, but in doing so, it inadvertently and profoundly changed how the internet looked.",
+      "This whole line of argument is called “market definition.” If the court decides the relevant market is phones and app stores, not specifically Android ones, then Google’s on the road to victory.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "The people who ruined the internet",
+    "evidence_page": null,
+    "evidence_text": "The company did accomplish that goal, but in doing so, it inadvertently and profoundly changed how the internet looked.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02264",
+    "query": "Which sportsbook, highlighted by both 'Sporting News' and 'CBSSports.com', provides a cash-out option for MLB bets, a welcome bonus plus NBA promotions, and up to $1,000 in bonus bets for new customers in Kentucky and Vermont if their first bet does not win?",
+    "ground_truth": "Caesars Sportsbook",
+    "evidence_docs": [
+      "MLB Betting Sites & Apps - The Best Baseball Sportsbooks 2023",
+      "NBA Rookie of the Year Odds - Wembanyama the early favorite",
+      "2023 Kentucky online sports betting sites: Best legal sportsbooks, promos, bonuses, mobile apps, how to bet",
+      "Vermont Sportsbook Promos and Sports Betting Launch News"
+    ],
+    "evidence_facts": [
+      "Caesars also has a cash-out option that allows you to settle bets early to guarantee a payout (though at a reduced amount).",
+      "Additionally, Caesars has a competitive welcome bonus for new players and runs NBA betting promos for existing players.",
+      "New customers can get up to $1000 in bonus bets if they lose their first bet.",
+      "We expect Caesars to offer the same offer in VT is has elsewhere, with new sign-ups eligible to receive up to a $1,000 Bonus Bet if their first bet loses."
+    ],
+    "evidence_doc": "MLB Betting Sites & Apps - The Best Baseball Sportsbooks 2023",
+    "evidence_page": null,
+    "evidence_text": "Caesars also has a cash-out option that allows you to settle bets early to guarantee a payout (though at a reduced amount).",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00303",
+    "query": "Which company, recently reviewed by TechCrunch for its 16-inch M3 Max MacBook Pro, is known for its stance on user privacy and its association with Google, is involved in an 18-month appeal process regarding a patent dispute with Masimo, and has been critiqued by Tim Sweeney for enforcing uniform terms on developers, OEMs, and carriers through its store and payment system, as reported by The Verge?",
+    "ground_truth": "Apple",
+    "evidence_docs": [
+      "Apple 16-inch M3 Max MacBook Pro review: A desktop among laptops",
+      "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+      "Why the Apple Watch is being banned — and how Apple can avoid it",
+      "Tim Sweeney on Epic’s victory royale over Google"
+    ],
+    "evidence_facts": [
+      "Along with building new chips, Apple has spent the last few years listening to consumers in a way it hadn’t for decades.",
+      "Cue had two messages: Apple believes in protecting its users’ privacy, and it also believes in Google.",
+      "Apple has already indicated that it plans to appeal, but appealing is a lengthy process that can take around 18 months.",
+      "They use their store, their payments, they force developers to all have the same terms, they force OEMs and carriers to all have the same terms."
+    ],
+    "evidence_doc": "Apple 16-inch M3 Max MacBook Pro review: A desktop among laptops",
+    "evidence_page": null,
+    "evidence_text": "Along with building new chips, Apple has spent the last few years listening to consumers in a way it hadn’t for decades.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01066",
+    "query": "Considering the information from an article in The Times of India and another in The Economic Times about Simran Bahadur, which team, mentioned as her favorite in The Times of India, also has a player that was highlighted for their performance in The Economic Times article?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01007",
+    "query": "Between the report from The Verge on Apple's defense of its Google Search deal published on September 26, 2023, and the TechCrunch report on the class action antitrust suit against Google published on December 15, 2023, was there no change in the portrayal of Google's market influence and competitive practices?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+      "Early impressions of Google’s Gemini aren’t great",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "“Certainly there wasn’t a valid alternative to Google at the time,” Cue said.",
+      "Google compared the performance of Gemini Pro to GPT-4’s predecessor, GPT-3.5, a model that’s around a year old.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+    "evidence_page": null,
+    "evidence_text": "“Certainly there wasn’t a valid alternative to Google at the time,” Cue said.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02337",
+    "query": "Considering the information from a BBC article detailing the latest diplomatic strategies of Russia and a CNN report on the economic impacts of sanctions on Moscow, which nation, represented by its single-character country code, has been identified as both a key negotiator in easing geopolitical tensions and also experiencing significant financial strain due to imposed trade restrictions?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01474",
+    "query": "Considering the information from a BBC News article and a Financial Times report on Vandita Pant, what is the first letter of the company where she was appointed to a significant leadership role, as mentioned in the BBC News article, and also involved in a major financial deal covered by the Financial Times?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01810",
+    "query": "After The Sydney Morning Herald reported on October 1st that Treasury yields increased, did The Age report a relaxation of bond yields when Wall Street rebounded, indicating a change or consistency in the behavior of Treasury yields?",
+    "ground_truth": "Change",
+    "evidence_docs": [
+      "ASX set to open higher as Wall Street rebounds; $A rises",
+      "ASX set to open lower as Wall Street closes September with more losses"
+    ],
+    "evidence_facts": [
+      "The local rebound came after Wall Street rose after getting some relief from relaxing bond yields and falling oil prices.",
+      "After easing earlier in the day on encouraging signals about inflation, Treasury yields got back to rising as the day progressed."
+    ],
+    "evidence_doc": "ASX set to open higher as Wall Street rebounds; $A rises",
+    "evidence_page": null,
+    "evidence_text": "The local rebound came after Wall Street rose after getting some relief from relaxing bond yields and falling oil prices.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00412",
+    "query": "Considering the information from a BBC Sport article and an ESPN Cricinfo report on Kate Cross, which club, known for its historical significance in English cricket and mentioned as Cross's domestic team in both articles, is represented by the initial 'L'?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01917",
+    "query": "Based on the information from two separate articles on Click, which company, known for its innovative technology solutions and mentioned as a key player in the European market expansion, also faced scrutiny in a second article for potential data privacy issues with its latest product release?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00716",
+    "query": "Which country, recently discussed in articles from Fortune, Globes English | Israel Business Arena, and Business Today | Latest Stock Market And Economy News India, has faced challenges such as a blockade leading to relocation warnings in Gaza, reached understandings to cease hostilities with Hamas, and has been the subject of discussions regarding intelligence failures in the context of surprise attacks?",
+    "ground_truth": "Israel",
+    "evidence_docs": [
+      "Israel's blockade of Gaza means that a region the size of Philadelphia faces a real risk of starvation, says Peace Studies scholar",
+      "Israel's defense undone by reliance on technology",
+      "'Massive intel failure by Mossad': Hamas' surprise attack on Israel shocks internet"
+    ],
+    "evidence_facts": [
+      "On Oct. 12, 2023, Israel warned 1.1 million Gaza residents in the northern section of the enclave to leave for the southern region, in advance of a potential ground invasion.",
+      "The understandings that Israel reached with Hamas in 2012 were made \"to stop the fighting\", Ortal says, and to get life back to normal as quickly as possible.",
+      "Another user said that no one can carry out such a major attack against Israel without intelligence support."
+    ],
+    "evidence_doc": "Israel's blockade of Gaza means that a region the size of Philadelphia faces a real risk of starvation, says Peace Studies scholar",
+    "evidence_page": null,
+    "evidence_text": "On Oct. 12, 2023, Israel warned 1.1 million Gaza residents in the northern section of the enclave to leave for the southern region, in advance of a potential ground invasion.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00090",
+    "query": "Does 'The Verge' claim that Google has the ability to resolve issues related to Android app distribution and in-app payment systems, while 'TechCrunch' accuses Google of anticompetitive behavior towards news publishers, indicating a difference in Google's impact on different industries?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Tim Sweeney on Epic’s victory royale over Google",
+      "Apple defends Google Search deal in court: ‘There wasn’t a valid alternative’",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "For all the other benefits they get from Android, Google could solve this problem today if they wanted to.",
+      "The Justice Department is focused on the deals Google makes — with Apple but also with Samsung and Mozilla and many others — to ensure it is the default search engine on practically every platform.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "Tim Sweeney on Epic’s victory royale over Google",
+    "evidence_page": null,
+    "evidence_text": "For all the other benefits they get from Android, Google could solve this problem today if they wanted to.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01905",
+    "query": "What are the entities that, according to Sporting News, not only offer welcome bonuses with specific requirements but also modify their betting lines in response to events like injuries or roster changes, and tighten NBA Rookie of the Year odds, all while adjusting odds to manage their liability when heavy betting occurs on a particular team or individual?",
+    "ground_truth": "Sportsbooks",
+    "evidence_docs": [
+      "Moneyline Betting - What is the Moneyline and How Does it Work?",
+      "The Best NBA Betting Sites and Apps for the 2023-24 Season",
+      "Line Shopping in Sports Betting - How to Find the Best Odds",
+      "NBA Rookie of the Year Odds - Wembanyama the early favorite"
+    ],
+    "evidence_facts": [
+      "If a significant amount of money is being placed on one team or participant, sportsbooks might adjust the odds to balance their liability.",
+      "From there, you can claim your welcome bonus, which can come in many forms (be sure to read the requirements of any welcome bonus before using it).",
+      "Every sportsbook jumps on board when a line moves or odds change for a legitimate reason, like an injury or roster move.",
+      "But sportsbooks are also gathering this information, and they begin to tighten the NBA Rookie of the Year lines in response."
+    ],
+    "evidence_doc": "Moneyline Betting - What is the Moneyline and How Does it Work?",
+    "evidence_page": null,
+    "evidence_text": "If a significant amount of money is being placed on one team or participant, sportsbooks might adjust the odds to balance their liability.",
+    "category": "inference_query",
+    "question_type": "inference_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00280",
+    "query": "Does the 'Sporting News' article claim that the England national rugby union team has had the same path to the Rugby World Cup semifinal compared to the path of The Wallabies (Australian national rugby union team) as implied by the 'Wide World Of Sports' article, with England defeating specific teams and The Wallabies' fate depending on a match between other teams?",
+    "ground_truth": "no",
+    "evidence_docs": [
+      "Where to watch England vs South Africa: Live stream, TV channel, lineups, odds for 2023 Rugby World Cup semifinal",
+      "The story behind anguished Wallabies star's photo"
+    ],
+    "evidence_facts": [
+      "Argentina, Japan, Chile, Samoa and Fiji have all provided highlights — Los Pumas are also in the semi-finals — and England have beaten all of them.",
+      "S﻿AINT-ETIENNE: The Wallabies will have to endure a more tortuous Sunday night watch than even the worst rom com as their Rugby World Cup fate is decided by Fiji and Portugal in Toulouse."
+    ],
+    "evidence_doc": "Where to watch England vs South Africa: Live stream, TV channel, lineups, odds for 2023 Rugby World Cup semifinal",
+    "evidence_page": null,
+    "evidence_text": "Argentina, Japan, Chile, Samoa and Fiji have all provided highlights — Los Pumas are also in the semi-finals — and England have beaten all of them.",
+    "category": "comparison_query",
+    "question_type": "comparison_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02401",
+    "query": "Considering the information from a New York Times article discussing the critical reception of the show and a Variety piece detailing the viewership numbers for the premiere, which character from \"The Last of Us\" is both central to the critically acclaimed narrative and present in the episode that garnered significant audience attention upon release?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00775",
+    "query": "Did 'The Guardian' report on Eintracht Frankfurt's historic Bundesliga achievement against Bayern Munich before 'The Independent - Sports' mentioned Joelinton's powerful goal for Newcastle?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "Another cruel comeback sees Newcastle perish in group of death",
+      "European football: Eintracht Frankfurt hit Bayern for five in famous thrashing"
+    ],
+    "evidence_facts": [
+      "Newcastle had Callum Wilson able to start, but their goal came from a less regular source, with a thunderbolt from Joelinton.",
+      "Ansgar Knauff then slotted in to make it 5-1 on the hour as Frankfurt became the first team in 48 years to score five goals in one hour against Bayern in the Bundesliga since their own 6-0 win in 1975."
+    ],
+    "evidence_doc": "Another cruel comeback sees Newcastle perish in group of death",
+    "evidence_page": null,
+    "evidence_text": "Newcastle had Callum Wilson able to start, but their goal came from a less regular source, with a thunderbolt from Joelinton.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_01364",
+    "query": "Considering the information from an article by Forbes about Min Kao's philanthropic efforts and another by Bloomberg discussing his business strategies, which university, known for its engineering program and having received significant donations from Min Kao, is also the institution where a business school case study was developed based on his company's market expansion tactics?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_00267",
+    "query": "Considering the information from a Bloomberg article detailing Microsoft's latest cloud computing advancements and a Wall Street Journal report on Microsoft's strategic acquisitions, which division within Microsoft, represented by a single letter, is responsible for integrating the new cloud technologies and also played a key role in the recent acquisition of a major gaming company?",
+    "ground_truth": "Insufficient information.",
+    "evidence_docs": [],
+    "evidence_facts": [],
+    "evidence_doc": "",
+    "evidence_page": null,
+    "evidence_text": "",
+    "category": "null_query",
+    "question_type": "null_query",
+    "dataset": "multihoprag"
+  },
+  {
+    "_id": "multihoprag_02074",
+    "query": "After the report by The Age on October 22, 2023, claiming that Google manipulates Search to maximise ad revenue, and the subsequent report by TechCrunch on November 6, 2023, regarding Epic Games' antitrust battle with Google over app distribution and payment processing markets, did TechCrunch maintain consistency in its reporting on December 15, 2023, when discussing a class action antitrust suit against Google by a news publisher?",
+    "ground_truth": "Yes",
+    "evidence_docs": [
+      "What to know about Fortnite maker Epic Games’ antitrust battle with Google, starting today",
+      "Is Google Search better than the rest? And is that fair?",
+      "News publisher files class action antitrust suit against Google, citing AI’s harms to their bottom line"
+    ],
+    "evidence_facts": [
+      "It will attempt to argue that Google restrains competition within two separate markets, including the distribution of apps to Android users and the market for payment processing solutions for content inside Android apps.",
+      "She admits that she may have misinterpreted the evidence, but maintains that Google manipulates Search to maximise ad revenue.",
+      "The case, filed by Arkansas-based publisher Helena World Chronicle, argues that Google “siphons off” news publishers’ content, their readers and ad revenue through anticompetitive means."
+    ],
+    "evidence_doc": "What to know about Fortnite maker Epic Games’ antitrust battle with Google, starting today",
+    "evidence_page": null,
+    "evidence_text": "It will attempt to argue that Google restrains competition within two separate markets, including the distribution of apps to Android users and the market for payment processing solutions for content inside Android apps.",
+    "category": "temporal_query",
+    "question_type": "temporal_query",
+    "dataset": "multihoprag"
+  }
+]

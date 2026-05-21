@@ -12,7 +12,7 @@ from core.vllm_client import get_llm_client
 from models.prehypo.graphrag import GraphRAG
 from models.naive.naive_rag import NaiveRAG
 from utils.io import _safe_float
-from utils.metrics import evaluate_financebench_response
+from utils.metrics import evaluate_financebench_response, evaluate_multihoprag_response
 from utils.reporting import _write_model_report_artifacts
 
 
@@ -119,9 +119,19 @@ async def run_benchmark(
         benchmark_data = benchmark_data[: max(0, int(limit))]
         logger.info("--limit %d: evaluating %d queries", limit, len(benchmark_data))
 
-    dataset_marker = benchmark_data[0].get("dataset", "") if benchmark_data else ""
-    is_financebench = dataset_marker == "financebench"
-    dataset_name = "FinanceBench" if is_financebench else "Unknown"
+    # Dataset dispatch via the per-query `dataset` marker. Both branches are
+    # LLM-judge scored, so the 3-way label / abstain post-processing below is
+    # shared; only the eval function (prompt + retrieval metrics) differs.
+    dataset_marker = (benchmark_data[0].get("dataset", "") if benchmark_data else "").strip().lower()
+    if dataset_marker == "multihoprag":
+        dataset_kind = "multihoprag"
+        dataset_name = "MultiHop-RAG"
+    else:
+        # Default to FinanceBench (legacy datasets without a marker).
+        dataset_kind = "financebench"
+        dataset_name = "FinanceBench"
+    is_financebench = dataset_kind == "financebench"
+    is_multihoprag = dataset_kind == "multihoprag"
     results = []
     category_results = {}
 
@@ -174,7 +184,22 @@ async def run_benchmark(
             response, retrieved_sources, trace = await engine.run_workflow(query, [])
             latency = time.time() - started
 
-            if is_financebench:
+            if is_multihoprag:
+                metrics = await evaluate_multihoprag_response(
+                    query=original_query,
+                    response=response,
+                    ground_truth=ground_truth,
+                    retrieved_sources=retrieved_sources,
+                    evidence_facts=item.get("evidence_facts", []),
+                    evidence_docs=item.get("evidence_docs", []),
+                    question_type=item.get("question_type", ""),
+                    vllm_client=vllm,
+                )
+                expected_sources = {
+                    "docs": item.get("evidence_docs", []),
+                    "facts": item.get("evidence_facts", []),
+                }
+            else:
                 metrics = await evaluate_financebench_response(
                     query=original_query,
                     response=response,
@@ -184,21 +209,22 @@ async def run_benchmark(
                     expected_page=item.get("evidence_page"),
                     vllm_client=vllm,
                 )
-                result_item = {
-                    "query": original_query,
-                    "category": category,
-                    "answer": response,
-                    "ground_truth": ground_truth,
-                    "expected_sources": {
-                        "doc": item.get("evidence_doc", ""),
-                        "page": item.get("evidence_page"),
-                        "text": item.get("evidence_text", ""),
-                    },
-                    "retrieved_sources": retrieved_sources,
-                    "interaction_trace": trace,
-                    "latency": latency,
-                    **metrics,
+                expected_sources = {
+                    "doc": item.get("evidence_doc", ""),
+                    "page": item.get("evidence_page"),
+                    "text": item.get("evidence_text", ""),
                 }
+            result_item = {
+                "query": original_query,
+                "category": category,
+                "answer": response,
+                "ground_truth": ground_truth,
+                "expected_sources": expected_sources,
+                "retrieved_sources": retrieved_sources,
+                "interaction_trace": trace,
+                "latency": latency,
+                **metrics,
+            }
         except Exception as exc:
             logger.error("Error processing query '%s': %s", original_query, exc)
             import traceback
@@ -207,38 +233,52 @@ async def run_benchmark(
             latency = time.time() - started
             error_text = f"{type(exc).__name__}: {exc}"
 
-            if is_financebench:
-                metrics = {
-                    "llm_judge_score": 0.0,
-                    "llm_judge_reason": "runtime_error",
-                    "hallucination": 0.0,
-                    "hallucination_reason": "runtime_error",
-                    "hallucination_source": "runtime_error",
-                    "hallucination_model": str(RAGConfig.EVAL_MODEL or ""),
-                    "doc_match": 0.0,
-                    "page_match": 0.0,
+            metrics = {
+                "llm_judge_score": 0.0,
+                "llm_judge_reason": "runtime_error",
+                "hallucination": 0.0,
+                "hallucination_reason": "runtime_error",
+                "hallucination_source": "runtime_error",
+                "hallucination_model": str(RAGConfig.EVAL_MODEL or ""),
+                "doc_match": 0.0,
+                "page_match": 0.0,
+            }
+            if is_multihoprag:
+                # Keep the same numeric keys the success path emits so the
+                # summary auto-averaging stays consistent across queries.
+                metrics.update({
+                    "mrr@10": 0.0, "map@10": 0.0, "hits@4": 0.0, "hits@10": 0.0,
+                    "evidence_doc_recall": 0.0,
+                })
+                expected_sources = {
+                    "docs": item.get("evidence_docs", []),
+                    "facts": item.get("evidence_facts", []),
                 }
-                result_item = {
-                    "query": original_query,
-                    "category": category,
-                    "answer": f"@@ANSWER: ERROR - {error_text}",
-                    "ground_truth": ground_truth,
-                    "expected_sources": {
-                        "doc": item.get("evidence_doc", ""),
-                        "page": item.get("evidence_page"),
-                        "text": item.get("evidence_text", ""),
-                    },
-                    "retrieved_sources": [],
-                    "interaction_trace": [{"step": "error", "output": error_text}],
-                    "latency": latency,
-                    "error": error_text,
-                    **metrics,
+            else:
+                expected_sources = {
+                    "doc": item.get("evidence_doc", ""),
+                    "page": item.get("evidence_page"),
+                    "text": item.get("evidence_text", ""),
                 }
+            result_item = {
+                "query": original_query,
+                "category": category,
+                "answer": f"@@ANSWER: ERROR - {error_text}",
+                "ground_truth": ground_truth,
+                "expected_sources": expected_sources,
+                "retrieved_sources": [],
+                "interaction_trace": [{"step": "error", "output": error_text}],
+                "latency": latency,
+                "error": error_text,
+                **metrics,
+            }
 
         if query != original_query:
             result_item["benchmark_query"] = query
 
-        if is_financebench:
+        # Both FinanceBench and MultiHop-RAG are LLM-judge scored, so the
+        # 3-way label / answer_attempted / abstain post-processing is shared.
+        if is_financebench or is_multihoprag:
             from utils.abstain import financebench_label, is_abstain
             answer_text = str(result_item.get("answer", "") or "")
             has_error = bool(result_item.get("error"))
@@ -315,11 +355,14 @@ async def run_benchmark(
                 cat_summaries[cat] = cat_sum
             summary["category_summaries"] = cat_summaries
 
-            # FinanceBench 3-way taxonomy aggregate (Correct Answer /
-            # Incorrect Answer / Refusal), matching the `label` field used
-            # in the official human-annotated results at
+            # 3-way taxonomy aggregate (Correct Answer / Incorrect Answer /
+            # Refusal), matching the `label` field used in the official
+            # human-annotated FinanceBench results at
             # https://github.com/patronus-ai/financebench/tree/main/results.
-            if is_financebench:
+            # The same labels apply to MultiHop-RAG (null_query → Refusal as
+            # the correct response); summary keys keep the `financebench_`
+            # prefix so downstream reporting reads them uniformly.
+            if is_financebench or is_multihoprag:
                 fb_counts = {"Correct Answer": 0, "Incorrect Answer": 0, "Refusal": 0}
                 for r in results:
                     label = r.get("financebench_label")

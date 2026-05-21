@@ -11,6 +11,50 @@ from dotenv import load_dotenv
 load_dotenv()
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+
+def _preset_rag_domain() -> None:
+    """Set RAG_DOMAIN (financial|news) BEFORE the prompt modules import, so the
+    model-side prompts (hypothetical-query gen, rewrite, rerank, synthesis)
+    pick the right framing. Explicit RAG_DOMAIN / --domain win; otherwise infer
+    from the queries file's `dataset` marker or the dataset path. Must run
+    before `from cli.* import ...` because those transitively import the
+    prompt constants, which are selected at import time."""
+    if os.environ.get("RAG_DOMAIN", "").strip():
+        return
+
+    argv = sys.argv
+
+    def _argval(flag: str):
+        if flag in argv:
+            idx = argv.index(flag)
+            if idx + 1 < len(argv):
+                return argv[idx + 1]
+        for tok in argv:
+            if tok.startswith(flag + "="):
+                return tok.split("=", 1)[1]
+        return None
+
+    domain = _argval("--domain")
+    if not domain:
+        marker = ""
+        queries_file = _argval("--queries_file")
+        if queries_file and os.path.exists(queries_file):
+            try:
+                import json
+                with open(queries_file, "r", encoding="utf-8") as fh:
+                    data = json.load(fh)
+                if data:
+                    marker = str(data[0].get("dataset", "")).strip().lower()
+            except Exception:
+                marker = ""
+        dataset = _argval("--dataset") or ""
+        domain = "news" if (marker == "multihoprag" or "multihoprag" in dataset) else "financial"
+
+    os.environ["RAG_DOMAIN"] = domain
+
+
+_preset_rag_domain()
+
 from cli.benchmark import run_benchmark_multi_seed
 from cli.index import run_indexing
 from models.prehypo.indexing.ocr import run_ocr
@@ -27,6 +71,10 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["index", "benchmark", "benchmark_all", "ocr"], required=True)
     parser.add_argument("--strategy", choices=["naive", "prehypo", "hyporeflect", "hoprag", "ms_graphrag"], default="prehypo")
+    parser.add_argument("--domain", choices=["financial", "news"], default=None,
+                        help="Prompt domain for model-side prompts. Default: auto-detected from "
+                             "--queries_file dataset marker / --dataset path (financebench->financial, "
+                             "multihoprag->news). Set RAG_DOMAIN to override.")
     parser.add_argument("--model", default="local")
     parser.add_argument("--dataset", default="data/finance_corpus")
     parser.add_argument("--queries_file", default="data/financebench_queries.json")

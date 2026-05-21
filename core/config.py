@@ -3,6 +3,18 @@ import os
 class RAGConfig:
     DATASET = os.environ.get("RAG_DATASET", "financebench").strip().lower() or "financebench"
 
+    # Prompt domain: selects which framing the MODEL-SIDE prompts use
+    # (financial-filing vs. general/news multi-hop) for hypothetical-query
+    # generation, query rewrite, reranking, search-continuation, and answer
+    # synthesis. Explicit RAG_DOMAIN wins; otherwise derived from the dataset
+    # marker. main.py auto-detects from --dataset/--queries_file and exports
+    # RAG_DOMAIN before the prompt modules import.
+    _DOMAIN_BY_DATASET = {"multihoprag": "news", "financebench": "financial"}
+    DOMAIN = (
+        os.environ.get("RAG_DOMAIN", "").strip().lower()
+        or _DOMAIN_BY_DATASET.get(DATASET, "financial")
+    )
+
     # --- Infrastructure (Actual ports identified) ---
     VLLM_URL = os.environ.get("VLLM_URL", "http://localhost:28000/v1")
     # Optional second generation endpoint for round-robin load balancing.
