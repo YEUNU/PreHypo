@@ -53,7 +53,7 @@ async def check_neo4j():
         return False
 
 async def main():
-    print("=== HypoReflect Environment Connectivity Check (uv-based) ===\n")
+    print("=== PreHypo Environment Connectivity Check (uv-based) ===\n")
     print(f"Python Interpreter: {sys.executable}")
     print(f"Working Directory: {os.getcwd()}\n")
     

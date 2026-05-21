@@ -15,7 +15,7 @@ constants. We:
 
 `HopBuilder.create_edge` does pairwise question similarity, which is O(N²) per
 group. We group documents by company (FinanceBench is company-anchored, like
-hyporeflect §3.1.4 same-company HOP filter) so each group stays tractable.
+prehypo §3.1.4 same-company HOP filter) so each group stays tractable.
 """
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ from typing import Optional
 
 import numpy as np
 
-logger = logging.getLogger("HypoReflect")
+logger = logging.getLogger("PreHypo")
 
 _HOPRAG_ROOT = Path(__file__).resolve().parents[2] / "third_party" / "HopRAG"
 
@@ -143,7 +143,7 @@ class _VLLMEmbedClient:
     """Drop-in replacement for SentenceTransformer.encode().
 
     Calls our vLLM /v1/embeddings (same backing model as the rest of the stack
-    so HopRAG nodes/edges live in the same embedding space as hyporeflect's,
+    so HopRAG nodes/edges live in the same embedding space as prehypo's,
     which keeps the architectural comparison apples-to-apples).
     """
 

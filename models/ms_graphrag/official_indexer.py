@@ -15,7 +15,7 @@ import shutil
 from pathlib import Path
 from typing import Optional
 
-logger = logging.getLogger("HypoReflect")
+logger = logging.getLogger("PreHypo")
 
 
 # vLLM endpoints — fixed by run_servers.sh. gen=28000 (GPU 1), gen2=28010 (GPU 0).

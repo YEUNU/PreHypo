@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 
-logger = logging.getLogger("HypoReflect")
+logger = logging.getLogger("PreHypo")
 
 
 def get_sample_companies(doc_info_path: str = "data/financebench_document_information.jsonl") -> list[str]:

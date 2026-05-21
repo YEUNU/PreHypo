@@ -68,8 +68,12 @@ tags); the per-dataset scripts above are the simpler everyday entrypoints.
 
 ## Local single-GPU run environment (RTX 5000 Ada, 32 GB)
 
-`run_servers.sh` assumes a 2-GPU layout; on this box launch vLLM manually on
-GPU 0. Attention backend: `flashinfer-python` IS installed (transitive dep of
+`run_servers.sh` defaults to a 2-GPU layout but the per-service GPU is now
+env-configurable — on a single GPU run
+`GEN_GPU=0 EMBED_GPU=0 RERANK_GPU=0 OCR_GPU=0 ./run_servers.sh all` (watch total
+`--gpu-memory-utilization` when co-locating). The manual launch below is
+equivalent and what was validated on this box. Attention backend:
+`flashinfer-python` IS installed (transitive dep of
 vllm, 0.6.8.post1), but vLLM defaults attention to FLASH_ATTN/FlashAttention 2
 when `--attention-backend` is unset (FLASHINFER is listed as available; sampling
 already uses FlashInfer). To use FlashInfer for attention too, pass

@@ -16,7 +16,7 @@ from core.config import RAGConfig
 from utils.ocr_tools import process_pdf_file
 
 
-logger = logging.getLogger("HypoReflect")
+logger = logging.getLogger("PreHypo")
 
 
 async def run_ocr(

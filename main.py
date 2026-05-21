@@ -64,7 +64,7 @@ from utils.io import get_sample_companies
 
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-logger = logging.getLogger("HypoReflect")
+logger = logging.getLogger("PreHypo")
 
 
 def _build_parser() -> argparse.ArgumentParser:

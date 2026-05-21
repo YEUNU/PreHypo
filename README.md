@@ -114,6 +114,8 @@ python3 data/prepare_financebench.py --download-pdfs
 #   data/finance_pdfs/*.pdf
 
 # 1) Start services (Neo4j + vLLM gen / embed / rerank / ocr)
+#    Default GPU placement targets a 2-GPU box. Single GPU? Put all on GPU 0:
+#    GEN_GPU=0 EMBED_GPU=0 RERANK_GPU=0 OCR_GPU=0 ./run_servers.sh all
 ./run_servers.sh all
 
 # 2) OCR the PDFs into a Markdown corpus

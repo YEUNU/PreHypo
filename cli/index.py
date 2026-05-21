@@ -21,7 +21,7 @@ from models.naive.naive_rag import NaiveRAG
 _PARSE_MP_CTX = _mp.get_context("spawn")
 
 
-logger = logging.getLogger("HypoReflect")
+logger = logging.getLogger("PreHypo")
 
 
 async def run_indexing(

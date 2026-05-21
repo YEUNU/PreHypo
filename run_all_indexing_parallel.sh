@@ -24,7 +24,7 @@
 #    gen2 (port 28010) absorb the contention. With ~32 GB GPUs and Qwen3-4B
 #    in each gen, the dominant bottleneck is MS GraphRAG's extract_graph
 #    stage (~30h on the full ~33k text_unit corpus).
-#  - When `VLLM_URL_2` is set, HypoReflect's `VLLMClient` round-robins between
+#  - When `VLLM_URL_2` is set, PreHypo's `VLLMClient` round-robins between
 #    gen and gen2. The MS GraphRAG official indexer installs a LiteLLM Router
 #    across `RAG_MS_GEN_API_BASES` for the same effect.
 #
@@ -32,7 +32,7 @@
 #   ./run_all_indexing_parallel.sh                # sample (one company per sector), OCR corpus
 #   ./run_all_indexing_parallel.sh --full         # full FinanceBench OCR corpus
 #   ./run_all_indexing_parallel.sh --n 1          # first sample company only
-#   ./run_all_indexing_parallel.sh --skip-baselines  # only HypoReflect family
+#   ./run_all_indexing_parallel.sh --skip-baselines  # only PreHypo family
 
 set -e
 
@@ -42,7 +42,7 @@ SKIP_BASELINES="false"
 LOG_DIR="logs/indexing_parallel"
 mkdir -p "$LOG_DIR"
 
-# Retrieval tuning defaults — override via env. These only affect HypoReflect /
+# Retrieval tuning defaults — override via env. These only affect PreHypo /
 # naive at index time; hoprag and ms_graphrag are insensitive.
 export NEO4J_FULLTEXT_ANALYZER="${NEO4J_FULLTEXT_ANALYZER:-english}"
 export RAG_RECREATE_TEXT_INDEX="${RAG_RECREATE_TEXT_INDEX:-False}"

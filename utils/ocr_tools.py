@@ -1,5 +1,5 @@
 """
-OCR Tools - PDF Processing Pipeline for HypoReflect
+OCR Tools - PDF Processing Pipeline for PreHypo
 
 Migrated from i-bp project with following changes:
 - Removed Celery dependency (pure asyncio)
