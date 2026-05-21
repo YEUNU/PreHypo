@@ -236,6 +236,17 @@ def build_config(corpus_tag: str, staged_input_dir: Path):
         "temperature": 0.0,
         "max_tokens": 1500,
     }
+    # Community reports need a higher output cap. The default 1500 truncates the
+    # report JSON mid-string (Unterminated string -> JSONDecodeError -> empty
+    # report; ~14% of communities failed at 1500 on the 4B model). max_length is
+    # 2000 content tokens + JSON wrapping, so give it headroom. A SEPARATE model
+    # id keeps extract_graph on max_tokens=1500 so its (expensive) per-call LLM
+    # cache stays valid — the cache key includes max_tokens, so bumping the
+    # shared model would force a full re-extraction.
+    report_call_args = {
+        "temperature": 0.0,
+        "max_tokens": int(os.environ.get("RAG_MS_REPORT_MAX_TOKENS", "4096")),
+    }
 
     cfg = GraphRagConfig(
         completion_models={
@@ -246,6 +257,14 @@ def build_config(corpus_tag: str, staged_input_dir: Path):
                 api_base=_GEN_API_BASE,
                 api_key="EMPTY",
                 call_args=completion_call_args,
+            ),
+            "report_completion_model": ModelConfig(
+                type="litellm",
+                model_provider="openai",
+                model=_GEN_MODEL_NAME,
+                api_base=_GEN_API_BASE,
+                api_key="EMPTY",
+                call_args=report_call_args,
             ),
         },
         embedding_models={
@@ -288,6 +307,10 @@ def build_config(corpus_tag: str, staged_input_dir: Path):
             },
         ),
     )
+    # Route community-report generation to the higher-max_tokens model so long
+    # reports don't truncate; extract_graph stays on the cached default model.
+    cfg.community_reports.completion_model_id = "report_completion_model"
+
     # MS pipeline gates extract_graph + summarize via asyncio.Semaphore(num_threads=concurrent_requests).
     # vLLM 4B handles 30+ parallel reqs comfortably (peak observed: 14 running + 7 waiting at limit 16
     # → fully saturated). Bump to 48 to drive the queue and shave wall-clock on the 33k-text_unit corpus.
