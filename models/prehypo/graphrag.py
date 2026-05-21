@@ -131,12 +131,12 @@ class GraphRAG(IndexingPipeline, RetrievalPipeline):
           1. Two-stage hybrid retrieve (Q-/body, then Q+ expansion if needed).
           2. Cross-encoder rerank with top-up.
           3. Deterministic 1-hop NEXT/HOP traversal over pre-built edges
-             (when RAG_AGENTIC_OFF_GRAPH_DEPTH > 0, default).
+             (when RAG_GRAPH_HOP_DEPTH > 0, default).
           4. Single LLM synthesis call.
         """
         _ = history
         retrieval_query = self._strip_format_instruction(user_query)
-        graph_depth = RAGConfig.AGENTIC_OFF_GRAPH_DEPTH
+        graph_depth = RAGConfig.GRAPH_HOP_DEPTH
 
         if graph_depth > 0:
             context, nodes = await self.graph_search(

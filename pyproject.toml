@@ -36,6 +36,7 @@ dependencies = [
 # Test/dev tooling. Install with: VIRTUAL_ENV=.venv uv pip install -e ".[dev]"
 dev = [
     "pytest",
+    "pytest-asyncio",
 ]
 
 # The repo is a flat-layout collection of top-level dirs (cli/core/models/

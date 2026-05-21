@@ -39,14 +39,6 @@ class RAGConfig:
         os.environ.get("VLLM_SERVED_MODEL_NAME", "generation-model")
     )  # Default to local served model unless explicitly overridden.
 
-    # --- Per-stage model overrides (empty string = use DEFAULT_MODEL) ---
-    # Supports local vLLM model names or OpenAI model names (gpt-*, o1-*, o3-*, o4-*)
-    PERCEPTION_MODEL  = os.environ.get("PERCEPTION_MODEL",  "")
-    PLANNING_MODEL    = os.environ.get("PLANNING_MODEL",    "")
-    EXECUTION_MODEL   = os.environ.get("EXECUTION_MODEL",   "")
-    REFLECTION_MODEL  = os.environ.get("REFLECTION_MODEL",  "")
-    REFINEMENT_MODEL  = os.environ.get("REFINEMENT_MODEL",  "")
-    
     # --- Common Service Settings ---
     RETRY_COUNT = int(os.environ.get("RAG_RETRY_COUNT", "3"))
     RETRY_DELAY = float(os.environ.get("RAG_RETRY_DELAY", "2.0"))
@@ -91,42 +83,6 @@ class RAGConfig:
     RERANK_DOC_MAX_TOKENS = int(os.environ.get("RERANK_DOC_MAX_TOKENS", "2800"))
     RERANK_OVERFLOW_DOC_MAX_TOKENS = int(os.environ.get("RERANK_OVERFLOW_DOC_MAX_TOKENS", "1800"))
     
-    # --- Agent Settings ---
-    MAX_AGENT_TURNS = 6
-    # R_max from paper §3.2.5. Default 1 (single-shot refinement). Earlier
-    # default 2 ran 4 extra LLM calls per query (1 refinement + 1 reflection
-    # re-judge × 2 iterations) without meaningful J/H lift on local-4B
-    # refinement. Set RAG_MAX_REFINEMENT=2 to restore the paper-aligned loop.
-    MAX_REFINEMENT_ATTEMPTS = int(os.environ.get("RAG_MAX_REFINEMENT", "1"))
-    # When False (default), the refinement loop trusts the refinement output
-    # via structural checks (citation present, @@ANSWER format, not regressing
-    # grounded to insufficient) instead of calling reflection.run again after
-    # each refinement. Saves R_max LLM calls. Restore reflection re-judging
-    # with RAG_REFINEMENT_REJUDGE=true.
-    REFINEMENT_REJUDGE = os.environ.get(
-        "RAG_REFINEMENT_REJUDGE", "false"
-    ).strip().lower() in {"1", "true", "yes", "on"}
-
-    # Single-call planning (plan + filter_policy in one JSON). Default ON
-    # saves 1 LLM call per query by merging the prior two-pass planning
-    # (plain-text plan + JSON filter_policy). Set RAG_PLANNING_MERGE=false
-    # to restore the two-pass path.
-    PLANNING_MERGE = os.environ.get(
-        "RAG_PLANNING_MERGE", "true"
-    ).strip().lower() in {"1", "true", "yes", "on"}
-
-    # Inline ledger extraction by the main agent LLM (option D). When True,
-    # the agent LLM emits `EVIDENCE:` lines alongside its tool_call, and the
-    # post-tool `_extract_evidence_entries` LLM call is skipped. Saves 1
-    # LLM call per execution-loop turn (~2-3 calls per query). The parser
-    # is fault-tolerant — partial / malformed JSON does not abort the
-    # turn, only the unparseable lines are dropped. Default OFF until
-    # validated on sample20.
-    AGENT_INLINE_LEDGER = os.environ.get(
-        "RAG_AGENT_INLINE_LEDGER", "true"
-    ).strip().lower() in {"1", "true", "yes", "on"}
-    STRICT_CITATION_CHECK = os.environ.get("RAG_STRICT_CITATION", "True").lower() == "true"
-    
     # --- OCR & PDF Processing Settings ---
     OCR_TEMPERATURE = float(os.environ.get("VLLM_OCR_TEMPERATURE", "0.2"))
     OCR_TOP_P = float(os.environ.get("VLLM_OCR_TOP_P", "0.9"))
@@ -167,42 +123,12 @@ class RAGConfig:
     COMPANY_BOOST = float(os.environ.get("RAG_COMPANY_BOOST", "0.35"))
     FINANCE_MARKER_BOOST = float(os.environ.get("RAG_FINANCE_MARKER_BOOST", "0.0"))
 
-    # Agentic-OFF retrieval depth. The previous implementation called only
-    # `retrieve()` (Stage 1+2 RRF + rerank) and ignored the NEXT/HOP graph
-    # edges built during indexing (paper §3.1.4). When >0, agentic-OFF uses
-    # `graph_search` with `force_expand=True` — deterministic graph traversal,
-    # no LLM continuation check. depth=0 restores the legacy behavior for
-    # ablation. depth=1 is the default (1-hop NEXT|HOP + runtime-HOP).
-    AGENTIC_OFF_GRAPH_DEPTH = int(os.environ.get("RAG_AGENTIC_OFF_GRAPH_DEPTH", "1"))
-
-    # Deterministic compute-slot fill before synthesis. When True, missing
-    # slots after the LLM ledger pass are populated by `_deterministic_
-    # compute_slot_entries` (regex/keyword search over chunk text) so the
-    # calculator path can fire. This was the source of operand_mismatch
-    # bugs (e.g., negative `current liabilities` bound from a cash-flow
-    # working-capital change line) — it acts as a relevance re-judge that
-    # the ledger LLM should own. Default OFF so missing slots stay missing
-    # and synthesis falls back to LLM-on-context. Set
-    # `RAG_DETERMINISTIC_SLOT_FILL=true` to restore the legacy behavior.
-    DETERMINISTIC_SLOT_FILL = os.environ.get(
-        "RAG_DETERMINISTIC_SLOT_FILL", "false"
-    ).strip().lower() in {"1", "true", "yes", "on"}
-
-    # Context atomization+packing LLM passes. When OFF (default), the
-    # execution loop skips `_extract_context_atoms` + `_pack_context_atoms`
-    # (2 LLM calls per ledger refresh) and uses the deterministic
-    # `_build_context_excerpt` directly. Atomization rephrases chunks into
-    # compact evidence atoms and re-judges relevance — a responsibility
-    # the retrieval+ledger layers already own. Disabling cuts ~6-12 LLM
-    # calls per agentic-on query. Restore with `RAG_ENABLE_ATOMIZATION=true`.
-    ENABLE_ATOMIZATION = os.environ.get(
-        "RAG_ENABLE_ATOMIZATION", "false"
-    ).strip().lower() in {"1", "true", "yes", "on"}
-
-    # Agentic-on execution loop tool-call budget (paper T_max). The dataclass
-    # default is 3 — env override allows ablation (e.g., RAG_MAX_TOOL_CALLS=2
-    # for faster runs, =6 for paper §3.2.3 spec).
-    MAX_TOOL_CALLS = int(os.environ.get("RAG_MAX_TOOL_CALLS", "3"))
+    # Graph traversal depth on the query path. depth=0 = pure `retrieve()`
+    # (Stage 1+2 RRF + rerank, no graph expansion) for ablation; depth>0 uses
+    # `graph_search` with `force_expand=True` — deterministic traversal over the
+    # NEXT/HOP edges built during indexing (paper §3.1.4), no LLM continuation
+    # check. depth=1 is the default (1-hop NEXT|HOP + runtime-HOP).
+    GRAPH_HOP_DEPTH = int(os.environ.get("RAG_GRAPH_HOP_DEPTH", "1"))
 
     # --- Benchmark Gate (Optional Quality Guardrail) ---
     BENCHMARK_GATE_ENABLED = os.environ.get("RAG_BENCHMARK_GATE", "False").lower() == "true"
@@ -216,7 +142,6 @@ class RAGConfig:
     ABLATION_TABLE_TO_TEXT = os.environ.get("RAG_ABLATION_TABLE", "True").lower() == "true"
     ABLATION_ADAPTIVE_CHUNKING = os.environ.get("RAG_ABLATION_CHUNKING", "True").lower() == "true"
     ABLATION_ROLLING_SUMMARY = os.environ.get("RAG_ABLATION_SUMMARY", "True").lower() == "true"
-    ENABLE_AGENT_REFLECTION = os.environ.get("RAG_ENABLE_REFLECTION", "True").lower() == "true"
 
     # Predictive Knowledge Mapping channel ablations.
     # ABLATION_Q_MINUS / ABLATION_Q_PLUS gate whether the Q-/Q+ channels

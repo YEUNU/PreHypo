@@ -96,7 +96,7 @@ def _make_rag_with_mocks(
     rag.graph_search = AsyncMock(return_value=(context, nodes or []))
     rag.retrieve = AsyncMock(return_value=(context, nodes or []))
     # Pin graph_depth at the config layer so we test both branches.
-    rag_patch = patch("core.config.RAGConfig.AGENTIC_OFF_GRAPH_DEPTH", graph_depth)
+    rag_patch = patch("core.config.RAGConfig.GRAPH_HOP_DEPTH", graph_depth)
     rag_patch.start()
     return rag, rag_patch
 
