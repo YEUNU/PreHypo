@@ -140,9 +140,20 @@ question_type: comparison 856 / inference 816 / temporal 583 / null 301).
   `media.githubusercontent.com/media/...` (raw endpoint returns LFS pointer
   text). Titles carry HTML entities (`&#039;`) → `html.unescape` applied.
 - Files: `data/multihoprag_corpus/` (txt input dir), `multihoprag_corpus.json`,
-  `multihoprag_queries.json` (full 2556), `multihoprag_sample100_queries.json`
-  (balanced 25×4). Dataset is detected via the per-query `dataset:"multihoprag"`
-  marker (`cli/benchmark.py`), NOT the filename.
+  `multihoprag_queries.json` (full 2556), and balanced samples built by
+  `data/make_multihoprag_sample.py --per-type N --seed 42` (stratified by
+  question_type, reproducible) → `multihoprag_sample<n>_queries.json`. Dataset is
+  detected via the per-query `dataset:"multihoprag"` marker (`cli/benchmark.py`),
+  NOT the filename.
+- **Sampling for figures**: the graph baselines are slow (hoprag ~160s/query →
+  full 2556 ≈ 28h even at concurrency 4), so the k-fold figures run on a balanced
+  sample, not the full set. Current protocol: **n=200** (50/question_type, file
+  `multihoprag_sample200_queries.json`), **5-fold** (40/fold), **seed 42** — the
+  MultiHop-RAG analog of the FinanceBench n=150 / 5-fold setup. All 4 strategies
+  MUST run on the same sample file for a fair cross-strategy comparison. K-fold
+  post-hoc analysis: `scripts/kfold_analysis.py --run-dir <run> --k 5`
+  (partitions one run's per-query details into folds → mean/std/CI per metric;
+  outputs `kfold_aggregate.json` + `kfold_figure.csv`).
 - **Domain branching**: `RAGConfig.DOMAIN` = financial|news; multihoprag→news.
   `main.py` auto-detects from `--dataset`/`--queries_file` marker and sets
   `RAG_DOMAIN` env *before* heavy imports (prompts pick their variant at import
@@ -152,16 +163,28 @@ question_type: comparison 856 / inference 816 / temporal 583 / null 301).
   (gold=`evidence_list[].fact`); generation = LLM-judge accuracy, broken out by
   question_type. null queries handled by abstain logic.
 - Run: `VLLM_URL_2= python main.py --mode benchmark_all --queries_file
-  data/multihoprag_sample100_queries.json --model generation-model
+  data/multihoprag_sample200_queries.json --model generation-model
   --corpus-tag multihoprag`. Judge uses OpenAI `EVAL_MODEL` (key in `.env`).
 - **Judge via OpenAI Batch API** (opt-in, 50% cheaper): set `RAG_JUDGE_BATCH=true`
-  with an OpenAI `EVAL_MODEL`. The benchmark collects all judge prompts during
-  the pass, submits ONE batch to `/v1/chat/completions`, polls until done (no
-  client timeout — up to the 24h batch SLA), then patches scores and recomputes
-  the 3-way labels. Any batch failure falls back to the synchronous per-query
-  judge so scores are never silently dropped. Default off = synchronous judge.
-  Code: `utils/batch_judge.py` (collector/runner), `utils/metrics.py`
-  (`_resolve_judge_fields` shared by both paths), `cli/benchmark.py` (phase-2).
+  with an OpenAI `EVAL_MODEL`. The benchmark collects all judge prompts during a
+  strategy's pass, submits ONE batch to `/v1/chat/completions`, and resolves the
+  scores (no client timeout — up to the 24h batch SLA). Any batch failure falls
+  back to the synchronous per-query judge so scores are never silently dropped.
+  Default off = synchronous judge.
+- **Async batch judge** (`RAG_JUDGE_BATCH_ASYNC`, default **true**): each strategy
+  *submits* its batch and continues without blocking — it leaves a
+  `<strategy>_<tag>.pending_judge.json` manifest next to its result file and
+  writes rows with tentative UNJUDGED (-1) scores. After all strategies finish,
+  `reconcile_pending_judges(run_dir)` (called automatically by `main.py` for
+  `benchmark`/`benchmark_all`) polls every batch **in parallel** (one wait, not
+  one-per-strategy), patches rows by `judge_custom_id` (rows land out of order
+  under concurrency → matched by id, not index), recomputes aggregates, and
+  refreshes the `.summary.json` sidecar. Set `RAG_JUDGE_BATCH_ASYNC=false` for the
+  old inline poll-block (each strategy waits for its own batch). Manual re-poll of
+  an interrupted run: `python scripts/reconcile_batch_judge.py --run-dir <run>`.
+  Code: `utils/batch_judge.py` (`submit`/`poll_and_fetch`/`resolve_batches`),
+  `utils/metrics.py` (`_resolve_judge_fields` shared by both paths),
+  `cli/benchmark.py` (phase-2 + `reconcile_pending_judges`).
 
 ## Neo4j data layout & integrity checks
 
