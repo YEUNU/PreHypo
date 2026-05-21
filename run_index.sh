@@ -23,6 +23,8 @@ cd "$SCRIPT_DIR"
 
 . "$SCRIPT_DIR/scripts/lib.sh"
 
+PYTHON_BIN="$(resolve_python "$SCRIPT_DIR")" || exit 1
+
 # Default values
 MODEL="prehypo"
 LLM="local"
@@ -113,7 +115,7 @@ if [ "$MODEL" = "all" ]; then
     
     for m in "${MODELS[@]}"; do
         echo "  Starting $m..."
-        python main.py --mode index $DATASET --strategy "$m" --model "$LLM" $N_COMPANIES $RAW_OCR $CLEAR_GRAPH $CORPUS_TAG $SAVE_INTERMEDIATE $SAMPLE $SAVE_TO $OCR > "logs/index_${m}.log" 2>&1 &
+        "$PYTHON_BIN" main.py --mode index $DATASET --strategy "$m" --model "$LLM" $N_COMPANIES $RAW_OCR $CLEAR_GRAPH $CORPUS_TAG $SAVE_INTERMEDIATE $SAMPLE $SAVE_TO $OCR > "logs/index_${m}.log" 2>&1 &
         PIDS+=($!)
     done
     
@@ -134,5 +136,5 @@ if [ "$MODEL" = "all" ]; then
     fi
     echo "✅ All models indexed successfully!"
 else
-    python main.py --mode index $DATASET --strategy "$MODEL" --model "$LLM" $N_COMPANIES $RAW_OCR $CLEAR_GRAPH $CORPUS_TAG $SAVE_INTERMEDIATE $SAMPLE $SAVE_TO $OCR
+    "$PYTHON_BIN" main.py --mode index $DATASET --strategy "$MODEL" --model "$LLM" $N_COMPANIES $RAW_OCR $CLEAR_GRAPH $CORPUS_TAG $SAVE_INTERMEDIATE $SAMPLE $SAVE_TO $OCR
 fi

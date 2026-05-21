@@ -13,6 +13,8 @@ cd "$SCRIPT_DIR"
 
 . "$SCRIPT_DIR/scripts/lib.sh"
 
+PYTHON_BIN="$(resolve_python "$SCRIPT_DIR")" || exit 1
+
 # Default values
 N_COMPANIES=""
 PDF_DIR="data/finance_pdfs"
@@ -61,4 +63,4 @@ fi
 # [2] Run OCR
 echo ""
 echo "[Step] Running OCR pipeline..."
-python main.py --mode ocr --pdf_dir "$PDF_DIR" --ocr_output "$OCR_OUTPUT" $TABLE_CONVERSION_FLAG $N_COMPANIES $SAMPLE
+"$PYTHON_BIN" main.py --mode ocr --pdf_dir "$PDF_DIR" --ocr_output "$OCR_OUTPUT" $TABLE_CONVERSION_FLAG $N_COMPANIES $SAMPLE

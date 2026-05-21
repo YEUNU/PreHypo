@@ -24,7 +24,27 @@ dependencies = [
     "matplotlib",
     "tqdm",
     "requests",
+    "pillow",
+    "pdf2image",
+    # FlashInfer attention backend for vLLM. Without it, vLLM falls back to
+    # FLASH_ATTN (works, but FlashInfer enables the faster attn path + autotune
+    # on this CUDA 13 / torch cu130 box). Wheels are CUDA-version specific.
+    "flashinfer-python",
 ]
+
+[project.optional-dependencies]
+# Test/dev tooling. Install with: VIRTUAL_ENV=.venv uv pip install -e ".[dev]"
+dev = [
+    "pytest",
+]
+
+# The repo is a flat-layout collection of top-level dirs (cli/core/models/
+# utils/...) run via `python main.py` from the repo root (main.py does
+# sys.path.append), not an importable distribution. Declare no top-level
+# modules so setuptools doesn't auto-discover them and abort the editable
+# build with "Multiple top-level packages discovered in a flat-layout".
+[tool.setuptools]
+py-modules = []
 
 [tool.ruff]
 line-length = 120

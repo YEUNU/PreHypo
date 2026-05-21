@@ -21,14 +21,7 @@ cd "$SCRIPT_DIR"
 
 . "$SCRIPT_DIR/scripts/lib.sh"
 
-PYTHON_BIN="${PYTHON_BIN:-$SCRIPT_DIR/.venv/bin/python}"
-if [ ! -x "$PYTHON_BIN" ]; then
-    if command -v python3 >/dev/null 2>&1; then
-        PYTHON_BIN="$(command -v python3)"
-    else
-        PYTHON_BIN="$(command -v python)"
-    fi
-fi
+PYTHON_BIN="$(resolve_python "$SCRIPT_DIR")" || exit 1
 
 # Default values
 QUERIES_FILE="data/financebench_queries.json"

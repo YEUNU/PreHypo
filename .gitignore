@@ -249,3 +249,17 @@ output/
 # Local debug / one-off probe scripts under scripts/_test_*.py
 scripts/_test_*.py
 .env
+
+# Downloadable / regenerable dataset files — recreate with data/prepare_*.py.
+# The prep scripts and the small curated query subsets stay tracked; these
+# large raw/full files do not.
+data/multihoprag_corpus.json
+data/MultiHopRAG.json
+data/multihoprag_queries.json
+data/financebench_open_source.jsonl
+data/financebench_document_information.jsonl
+data/financebench_queries.json
+
+# Session-scratch orchestration scripts (hardcoded PIDs; not part of the repo).
+run_mhr_finish.sh
+run_flashinfer_switch.sh

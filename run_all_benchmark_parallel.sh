@@ -36,14 +36,8 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
-PYTHON_BIN="${PYTHON_BIN:-$SCRIPT_DIR/.venv/bin/python}"
-if [ ! -x "$PYTHON_BIN" ]; then
-    if command -v python3 >/dev/null 2>&1; then
-        PYTHON_BIN="$(command -v python3)"
-    else
-        PYTHON_BIN="$(command -v python)"
-    fi
-fi
+. "$SCRIPT_DIR/scripts/lib.sh"
+PYTHON_BIN="$(resolve_python "$SCRIPT_DIR")" || exit 1
 
 SAMPLE_FLAG="--sample"
 N_COMPANIES=""

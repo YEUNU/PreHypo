@@ -8,9 +8,18 @@ set -e
 
 # [환경 설정]
 export VLLM_API_KEY="${VLLM_API_KEY:-EMPTY}"
-# Ensure nvcc is on PATH for FlashInfer JIT compilation.
-if [ -d "/usr/local/cuda-12.8/bin" ]; then
-    export PATH="/usr/local/cuda-12.8/bin:$PATH"
+# Ensure nvcc is on PATH for FlashInfer JIT compilation. Honor $CUDA_HOME, else
+# fall back to the active /usr/local/cuda symlink or any versioned install.
+# (Don't hardcode a CUDA version — boxes differ; this one is CUDA 13.x.)
+if [ -n "${CUDA_HOME:-}" ] && [ -x "${CUDA_HOME}/bin/nvcc" ]; then
+    export PATH="${CUDA_HOME}/bin:$PATH"
+elif ! command -v nvcc >/dev/null 2>&1; then
+    for _cuda_dir in /usr/local/cuda /usr/local/cuda-*; do
+        if [ -x "${_cuda_dir}/bin/nvcc" ]; then
+            export PATH="${_cuda_dir}/bin:$PATH"
+            break
+        fi
+    done
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
