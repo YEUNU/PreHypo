@@ -218,6 +218,18 @@ async def _run_combined_judge(
     so those are passed in. Returns the dataset-agnostic judge fields; callers
     append their own evidence/retrieval metrics.
     """
+    judge_model, judge_payload = await _call_judge_llm(judge_prompt, vllm_client)
+    return _resolve_judge_fields(
+        judge_payload, response, judge_model, heuristic_fn(), has_client=bool(vllm_client)
+    )
+
+
+async def _call_judge_llm(judge_prompt: str, vllm_client) -> tuple[str, Optional[dict]]:
+    """The synchronous LLM judge call (with one fallback-model retry).
+
+    Returns (judge_model, judge_payload). Factored out so the batch path can
+    reuse `_resolve_judge_fields` on payloads it fetched elsewhere.
+    """
     judge_model = RAGConfig.EVAL_MODEL
     judge_payload: Optional[dict] = None
     if vllm_client:
@@ -226,8 +238,7 @@ async def _run_combined_judge(
                 [{"role": "user", "content": judge_prompt}],
                 model=RAGConfig.EVAL_MODEL,
             )
-            parsed_score = _parse_unit_score((judge_payload or {}).get("score"))
-            if parsed_score is None:
+            if _parse_unit_score((judge_payload or {}).get("score")) is None:
                 fallback_model = RAGConfig.DEFAULT_MODEL
                 if fallback_model and fallback_model != RAGConfig.EVAL_MODEL:
                     logger.warning(
@@ -243,7 +254,22 @@ async def _run_combined_judge(
         except Exception as e:
             logger.error(f"LLM Judge failed: {e}")
             judge_payload = None
+    return judge_model, judge_payload
 
+
+def _resolve_judge_fields(
+    judge_payload: Optional[dict],
+    response: str,
+    judge_model: str,
+    heuristic: tuple[float, str],
+    has_client: bool = True,
+) -> dict:
+    """Turn a judge payload (sync or batch) into the judge/hallucination fields.
+
+    Pure / no I/O so both the synchronous and OpenAI-Batch paths resolve scores
+    identically. `heuristic` is the precomputed (score, reason) fallback used
+    when the payload has no usable score.
+    """
     parsed_score = _parse_unit_score((judge_payload or {}).get("score"))
     parsed_hallu = _parse_unit_score((judge_payload or {}).get("hallucination"))
 
@@ -251,8 +277,8 @@ async def _run_combined_judge(
         judge_score = parsed_score
         judge_reason = str((judge_payload or {}).get("reason", "")) or "combined_judge"
     else:
-        judge_score, judge_reason = heuristic_fn()
-        if not vllm_client:
+        judge_score, judge_reason = heuristic
+        if not has_client:
             judge_reason = "fallback_heuristic_without_judge_client"
 
     # Resolve hallucination from the same combined call when possible. Apply
@@ -285,6 +311,35 @@ async def _run_combined_judge(
     }
 
 
+async def _judge_or_defer(
+    judge_prompt: str,
+    response: str,
+    vllm_client,
+    heuristic_fn,
+    batch_collector=None,
+    custom_id=None,
+) -> dict:
+    """Run the judge synchronously, or — when a batch collector is supplied —
+    register the prompt and return a tentative (heuristic) result tagged with
+    `_deferred_judge` so the benchmark can patch in the real score after the
+    OpenAI batch completes.
+    """
+    if batch_collector is not None and custom_id is not None:
+        batch_collector.register(str(custom_id), judge_prompt)
+        heuristic = heuristic_fn()
+        judge = _resolve_judge_fields(None, response, RAGConfig.EVAL_MODEL, heuristic, has_client=True)
+        judge["_deferred_judge"] = {
+            "custom_id": str(custom_id),
+            "prompt": judge_prompt,
+            "response": response,
+            "heuristic_score": heuristic[0],
+            "heuristic_reason": heuristic[1],
+            "judge_model": RAGConfig.EVAL_MODEL,
+        }
+        return judge
+    return await _run_combined_judge(judge_prompt, response, vllm_client, heuristic_fn)
+
+
 async def evaluate_financebench_response(
     query: str,
     response: str,
@@ -292,7 +347,9 @@ async def evaluate_financebench_response(
     retrieved_sources: List[Any],
     expected_doc: str,
     expected_page: Optional[int] = None,
-    vllm_client = None
+    vllm_client = None,
+    batch_collector = None,
+    custom_id = None,
 ) -> dict:
     """
     FinanceBench 통합 평가 인터페이스 (LLM-as-a-judge + Evidence Match).
@@ -313,7 +370,9 @@ async def evaluate_financebench_response(
         ground_truth=ground_truth,
         response=response,
     )
-    judge = await _run_combined_judge(judge_prompt, response, vllm_client, _heuristic_judge)
+    judge = await _judge_or_defer(
+        judge_prompt, response, vllm_client, _heuristic_judge, batch_collector, custom_id
+    )
 
     # Evidence Match (Doc & Page). Supports dict/list/str source types.
     evidence_metrics = calculate_evidence_match(retrieved_sources, expected_doc, expected_page)
@@ -443,6 +502,8 @@ async def evaluate_multihoprag_response(
     evidence_docs: Optional[List[str]] = None,
     question_type: str = "",
     vllm_client = None,
+    batch_collector = None,
+    custom_id = None,
 ) -> dict:
     """MultiHop-RAG evaluation: type-aware LLM judge + fact-level retrieval
     ranking metrics (MRR/MAP/Hits@K), per Tang & Yang (2024). Judging shares
@@ -464,7 +525,9 @@ async def evaluate_multihoprag_response(
         ground_truth=ground_truth,
         response=response,
     )
-    judge = await _run_combined_judge(judge_prompt, response, vllm_client, _heuristic_judge)
+    judge = await _judge_or_defer(
+        judge_prompt, response, vllm_client, _heuristic_judge, batch_collector, custom_id
+    )
 
     ranking = calculate_retrieval_ranking_metrics(retrieved_sources, evidence_facts or [])
     doc_recall = calculate_multihop_doc_recall(retrieved_sources, evidence_docs or [])

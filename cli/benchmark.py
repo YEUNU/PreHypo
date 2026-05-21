@@ -55,6 +55,35 @@ def _build_benchmark_query(query: str, item: dict[str, Any]) -> str:
     return query
 
 
+def _apply_judge_label(result_item: dict[str, Any], is_financebench: bool, is_multihoprag: bool) -> None:
+    """Derive answer_attempted / financebench_label (+ hallucination fallback)
+    from the (possibly just-patched) llm_judge_score. Idempotent, so it can be
+    re-run after the OpenAI batch resolves a deferred judge score.
+    """
+    if not (is_financebench or is_multihoprag):
+        return
+    from utils.abstain import financebench_label, is_abstain
+    answer_text = str(result_item.get("answer", "") or "")
+    has_error = bool(result_item.get("error"))
+    # Detect abstain on the EXTRACTED final answer (\\boxed{} / 'Final Answer:'),
+    # not the full CoT body which often uses 'insufficient evidence' mid-reason.
+    final_answer = _extract_final_answer(answer_text).lower()
+    abstained = is_abstain(final_answer)
+    judge_score = _safe_float(result_item.get("llm_judge_score", 0.0), 0.0)
+    # Judge override: a score >= 0.5 means a usable answer regardless of phrasing.
+    if has_error:
+        answer_attempted = 0.0
+    elif judge_score >= 0.5:
+        answer_attempted = 1.0
+    else:
+        answer_attempted = 0.0 if abstained else 1.0
+    result_item["answer_attempted"] = answer_attempted
+    result_item["final_answer_extracted"] = final_answer[:300]
+    if not isinstance(result_item.get("hallucination"), (int, float)):
+        result_item["hallucination"] = 1.0 if (answer_attempted > 0.0 and judge_score < 1.0) else 0.0
+    result_item["financebench_label"] = financebench_label(judge_score, final_answer)
+
+
 async def run_benchmark(
     queries_file: str,
     strategy: str,
@@ -171,6 +200,94 @@ async def run_benchmark(
     if benchmark_concurrency > 1:
         logger.info("Benchmark concurrency: %d queries in flight", benchmark_concurrency)
 
+    # Optional OpenAI Batch API judge (opt-in via RAG_JUDGE_BATCH; OpenAI
+    # EVAL_MODEL only). Collects judge prompts during the pass below, then one
+    # batch resolves all scores after `gather`. Falls back to sync on failure.
+    batch_collector = None
+    if RAGConfig.JUDGE_BATCH and vllm is not None:
+        eval_model = str(RAGConfig.EVAL_MODEL or "")
+        is_openai_eval = eval_model.startswith(("gpt-", "o1", "o3", "o4", "chatgpt"))
+        if is_openai_eval and RAGConfig.OPENAI_API_KEY:
+            from utils.batch_judge import OpenAIBatchJudge
+            batch_collector = OpenAIBatchJudge(
+                eval_model,
+                RAGConfig.OPENAI_API_KEY,
+                poll_seconds=RAGConfig.JUDGE_BATCH_POLL_SECONDS,
+            )
+            logger.info("Judge: OpenAI Batch API mode (RAG_JUDGE_BATCH) — deferring %d judge calls to one batch", total_queries)
+        else:
+            logger.warning(
+                "RAG_JUDGE_BATCH set but EVAL_MODEL '%s' is not an OpenAI model (or OPENAI_API_KEY missing); using synchronous judge.",
+                eval_model,
+            )
+
+    def _recompute_and_persist() -> dict[str, Any]:
+        """Rebuild the summary from `results` and write the result file +
+        report artifacts. Called incrementally per query and once more after
+        the batch judge patches deferred scores."""
+        ref = results[-1] if results else {}
+        s: dict[str, Any] = {
+            "strategy": strategy,
+            "corpus_tag": corpus_tag,
+            "dataset": dataset_name,
+            "queries_count": len(results),
+            "total_queries": total_queries,
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "status": "in_progress" if len(results) < total_queries else "completed",
+            "models": {
+                "default": RAGConfig.DEFAULT_MODEL,
+                "embedding": RAGConfig.EMBEDDING_MODEL,
+                "eval": RAGConfig.EVAL_MODEL,
+            },
+            "ablation": {
+                "table_to_text": RAGConfig.ABLATION_TABLE_TO_TEXT,
+                "adaptive_chunking": RAGConfig.ABLATION_ADAPTIVE_CHUNKING,
+                "rolling_summary": RAGConfig.ABLATION_ROLLING_SUMMARY,
+            },
+        }
+        denom = len(results) or 1
+        for key in ref.keys():
+            if isinstance(ref.get(key), (int, float)) and not isinstance(ref.get(key), bool):
+                s[f"avg_{key}"] = sum(r[key] for r in results) / denom
+        cat_summaries = {}
+        for cat, cat_list in category_results.items():
+            cat_sum: dict[str, Any] = {"count": len(cat_list)}
+            for key in ref.keys():
+                if isinstance(ref.get(key), (int, float)) and not isinstance(ref.get(key), bool):
+                    cat_sum[f"avg_{key}"] = sum(r[key] for r in cat_list) / (len(cat_list) or 1)
+            cat_summaries[cat] = cat_sum
+        s["category_summaries"] = cat_summaries
+
+        if is_financebench or is_multihoprag:
+            fb_counts = {"Correct Answer": 0, "Incorrect Answer": 0, "Refusal": 0}
+            for r in results:
+                label = r.get("financebench_label")
+                if label in fb_counts:
+                    fb_counts[label] += 1
+            total = len(results) or 1
+            s["financebench_correct_count"] = fb_counts["Correct Answer"]
+            s["financebench_incorrect_count"] = fb_counts["Incorrect Answer"]
+            s["financebench_refusal_count"] = fb_counts["Refusal"]
+            s["financebench_correct_rate"] = fb_counts["Correct Answer"] / total
+            s["financebench_incorrect_rate"] = fb_counts["Incorrect Answer"] / total
+            s["financebench_refusal_rate"] = fb_counts["Refusal"] / total
+
+        s["details"] = results
+        # Report artifacts first (writes full traces), then a slim main JSON
+        # (no interaction_trace, no internal _-prefixed keys e.g. _deferred_judge).
+        try:
+            _write_model_report_artifacts(s, result_file)
+        except Exception as exc:
+            logger.warning("Failed to write report artifacts for %s: %s", result_file, exc)
+        slim_details = [
+            {k: v for k, v in d.items() if k != "interaction_trace" and not k.startswith("_")}
+            if isinstance(d, dict) else d
+            for d in (s.get("details") or [])
+        ]
+        with open(result_file, "w", encoding="utf-8") as file:
+            json.dump({**s, "details": slim_details}, file, indent=2, ensure_ascii=False)
+        return s
+
     async def _process_query(idx: int, item: dict[str, Any]):
       nonlocal summary
       async with query_sem:
@@ -194,6 +311,8 @@ async def run_benchmark(
                     evidence_docs=item.get("evidence_docs", []),
                     question_type=item.get("question_type", ""),
                     vllm_client=vllm,
+                    batch_collector=batch_collector,
+                    custom_id=str(idx),
                 )
                 expected_sources = {
                     "docs": item.get("evidence_docs", []),
@@ -208,6 +327,8 @@ async def run_benchmark(
                     expected_doc=item.get("evidence_doc", ""),
                     expected_page=item.get("evidence_page"),
                     vllm_client=vllm,
+                    batch_collector=batch_collector,
+                    custom_id=str(idx),
                 )
                 expected_sources = {
                     "doc": item.get("evidence_doc", ""),
@@ -278,37 +399,9 @@ async def run_benchmark(
 
         # Both FinanceBench and MultiHop-RAG are LLM-judge scored, so the
         # 3-way label / answer_attempted / abstain post-processing is shared.
-        if is_financebench or is_multihoprag:
-            from utils.abstain import financebench_label, is_abstain
-            answer_text = str(result_item.get("answer", "") or "")
-            has_error = bool(result_item.get("error"))
-            # Detect abstain on the EXTRACTED final answer (\\boxed{} or
-            # 'Final Answer:' marker), NOT on the full reasoning body. Step-by-
-            # step CoT often uses 'insufficient evidence' as a logical token
-            # while still arriving at a substantive answer; substring matching
-            # the full text mis-classifies those as abstains. HopRAG-style
-            # natural-language responses without those markers fall through
-            # to the last 300 chars (see `_extract_final_answer`), which
-            # captures HopRAG's "I do not know..." abstain prefix.
-            final_answer = _extract_final_answer(answer_text).lower()
-            abstained = is_abstain(final_answer)
-            judge_score = _safe_float(result_item.get("llm_judge_score", 0.0), 0.0)
-            # Judge override: if the LLM judge already scored this as correct,
-            # the model clearly produced a usable answer regardless of phrasing.
-            if has_error:
-                answer_attempted = 0.0
-            elif judge_score >= 0.5:
-                answer_attempted = 1.0
-            else:
-                answer_attempted = 0.0 if abstained else 1.0
-            result_item["answer_attempted"] = answer_attempted
-            result_item["final_answer_extracted"] = final_answer[:300]
-            if not isinstance(result_item.get("hallucination"), (int, float)):
-                result_item["hallucination"] = 1.0 if (answer_attempted > 0.0 and judge_score < 1.0) else 0.0
-            # FinanceBench-style 3-way label baked into each result row
-            # (matches the `label` field in
-            # https://github.com/patronus-ai/financebench/tree/main/results).
-            result_item["financebench_label"] = financebench_label(judge_score, final_answer)
+        # In batch-judge mode the score here is the tentative heuristic; phase 2
+        # re-runs this after the real batch score lands.
+        _apply_judge_label(result_item, is_financebench, is_multihoprag)
 
         async with write_lock:
             results.append(result_item)
@@ -323,80 +416,7 @@ async def run_benchmark(
                 f"| DocMatch: {metrics['doc_match']:.0f} | Latency: {latency:.1f}s"
             )
 
-            summary = {
-                "strategy": strategy,
-                "corpus_tag": corpus_tag,
-                "dataset": dataset_name,
-                "queries_count": len(results),
-                "total_queries": total_queries,
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                "status": "in_progress" if len(results) < total_queries else "completed",
-                "models": {
-                    "default": RAGConfig.DEFAULT_MODEL,
-                    "embedding": RAGConfig.EMBEDDING_MODEL,
-                    "eval": RAGConfig.EVAL_MODEL,
-                },
-                "ablation": {
-                    "table_to_text": RAGConfig.ABLATION_TABLE_TO_TEXT,
-                    "adaptive_chunking": RAGConfig.ABLATION_ADAPTIVE_CHUNKING,
-                    "rolling_summary": RAGConfig.ABLATION_ROLLING_SUMMARY,
-                },
-            }
-            for key in result_item.keys():
-                if isinstance(result_item[key], (int, float)):
-                    summary[f"avg_{key}"] = sum(result[key] for result in results) / len(results)
-
-            cat_summaries = {}
-            for cat, cat_list in category_results.items():
-                cat_sum = {"count": len(cat_list)}
-                for key in result_item.keys():
-                    if isinstance(result_item[key], (int, float)):
-                        cat_sum[f"avg_{key}"] = sum(result[key] for result in cat_list) / len(cat_list)
-                cat_summaries[cat] = cat_sum
-            summary["category_summaries"] = cat_summaries
-
-            # 3-way taxonomy aggregate (Correct Answer / Incorrect Answer /
-            # Refusal), matching the `label` field used in the official
-            # human-annotated FinanceBench results at
-            # https://github.com/patronus-ai/financebench/tree/main/results.
-            # The same labels apply to MultiHop-RAG (null_query → Refusal as
-            # the correct response); summary keys keep the `financebench_`
-            # prefix so downstream reporting reads them uniformly.
-            if is_financebench or is_multihoprag:
-                fb_counts = {"Correct Answer": 0, "Incorrect Answer": 0, "Refusal": 0}
-                for r in results:
-                    label = r.get("financebench_label")
-                    if label in fb_counts:
-                        fb_counts[label] += 1
-                total = len(results) or 1
-                summary["financebench_correct_count"] = fb_counts["Correct Answer"]
-                summary["financebench_incorrect_count"] = fb_counts["Incorrect Answer"]
-                summary["financebench_refusal_count"] = fb_counts["Refusal"]
-                summary["financebench_correct_rate"] = fb_counts["Correct Answer"] / total
-                summary["financebench_incorrect_rate"] = fb_counts["Incorrect Answer"] / total
-                summary["financebench_refusal_rate"] = fb_counts["Refusal"] / total
-
-            summary["details"] = results
-
-            # Write report artifacts FIRST (it writes the full trace to a
-            # separate *.traces.jsonl), then strip interaction_trace from
-            # the main JSON to keep it lightweight (the trace alone was
-            # ~77% of the file size).
-            try:
-                _write_model_report_artifacts(summary, result_file)
-            except Exception as exc:
-                logger.warning("Failed to write report artifacts for %s: %s", result_file, exc)
-
-            slim_details = []
-            for d in summary.get("details", []) or []:
-                if isinstance(d, dict):
-                    slim = {k: v for k, v in d.items() if k != "interaction_trace"}
-                    slim_details.append(slim)
-                else:
-                    slim_details.append(d)
-            slim_summary = {**summary, "details": slim_details}
-            with open(result_file, "w", encoding="utf-8") as file:
-                json.dump(slim_summary, file, indent=2, ensure_ascii=False)
+            summary = _recompute_and_persist()
 
     await asyncio.gather(
         *[_process_query(i, it) for i, it in enumerate(benchmark_data)],
@@ -405,6 +425,35 @@ async def run_benchmark(
 
     if not results:
         return None
+
+    # Phase 2 (batch judge): resolve every deferred score from one OpenAI batch,
+    # patch the result rows, recompute the 3-way labels, and rewrite the summary.
+    if batch_collector is not None and batch_collector.count > 0:
+        from utils.metrics import _resolve_judge_fields, _call_judge_llm
+        payloads: Optional[dict[str, Any]] = None
+        try:
+            payloads = await batch_collector.run()
+        except Exception as exc:
+            logger.error("Batch judge failed (%s); falling back to synchronous judge for deferred rows.", exc)
+        for r in results:
+            deferred = r.pop("_deferred_judge", None)
+            if not deferred:
+                continue
+            cid = deferred["custom_id"]
+            payload = payloads.get(cid) if payloads is not None else None
+            if payload is None and payloads is None:
+                # Whole batch failed → sync fallback per row (keeps scores valid).
+                _, payload = await _call_judge_llm(deferred["prompt"], vllm)
+            judge_fields = _resolve_judge_fields(
+                payload,
+                deferred["response"],
+                deferred["judge_model"],
+                (deferred["heuristic_score"], deferred["heuristic_reason"]),
+                has_client=True,
+            )
+            r.update(judge_fields)
+            _apply_judge_label(r, is_financebench, is_multihoprag)
+        summary = _recompute_and_persist()
 
     def _make_gate_check(actual: float, target: float, mode: str) -> dict[str, Any]:
         passed = actual >= target if mode == "min" else actual <= target

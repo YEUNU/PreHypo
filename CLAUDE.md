@@ -154,6 +154,14 @@ question_type: comparison 856 / inference 816 / temporal 583 / null 301).
 - Run: `VLLM_URL_2= python main.py --mode benchmark_all --queries_file
   data/multihoprag_sample100_queries.json --model generation-model
   --corpus-tag multihoprag`. Judge uses OpenAI `EVAL_MODEL` (key in `.env`).
+- **Judge via OpenAI Batch API** (opt-in, 50% cheaper): set `RAG_JUDGE_BATCH=true`
+  with an OpenAI `EVAL_MODEL`. The benchmark collects all judge prompts during
+  the pass, submits ONE batch to `/v1/chat/completions`, polls until done (no
+  client timeout — up to the 24h batch SLA), then patches scores and recomputes
+  the 3-way labels. Any batch failure falls back to the synchronous per-query
+  judge so scores are never silently dropped. Default off = synchronous judge.
+  Code: `utils/batch_judge.py` (collector/runner), `utils/metrics.py`
+  (`_resolve_judge_fields` shared by both paths), `cli/benchmark.py` (phase-2).
 
 ## Neo4j data layout & integrity checks
 

@@ -39,6 +39,16 @@ class RAGConfig:
         os.environ.get("VLLM_SERVED_MODEL_NAME", "generation-model")
     )  # Default to local served model unless explicitly overridden.
 
+    # Route the judge/hallucination call through the OpenAI Batch API (50%
+    # cheaper) instead of one synchronous request per query. Opt-in; only
+    # applies when EVAL_MODEL is an OpenAI model. The benchmark collects all
+    # judge prompts, submits one batch, polls, then resolves scores. On any
+    # batch failure it falls back to the synchronous per-query judge.
+    JUDGE_BATCH = os.environ.get("RAG_JUDGE_BATCH", "false").strip().lower() in {"1", "true", "yes", "on"}
+    # Poll cadence only; there is no client-side timeout (OpenAI batches may take
+    # up to 24h — the run waits as long as needed).
+    JUDGE_BATCH_POLL_SECONDS = int(os.environ.get("RAG_JUDGE_BATCH_POLL_SECONDS", "15"))
+
     # --- Common Service Settings ---
     RETRY_COUNT = int(os.environ.get("RAG_RETRY_COUNT", "3"))
     RETRY_DELAY = float(os.environ.get("RAG_RETRY_DELAY", "2.0"))
