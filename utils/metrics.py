@@ -203,25 +203,28 @@ def _is_insufficient_text(text: Any) -> bool:
     return is_abstain(text)
 
 
+# Sentinel for a row the LLM judge never scored (judge failed, or — in batch
+# mode — not yet resolved). Kept out of [0,1] so aggregation can exclude it
+# instead of treating an unjudged row as a wrong (0.0) answer.
+UNJUDGED_SCORE = -1.0
+
+
 async def _run_combined_judge(
     judge_prompt: str,
     response: str,
     vllm_client,
-    heuristic_fn,
 ) -> dict:
     """Run the shared single-call LLM judge and resolve (score, hallucination).
 
     Both FinanceBench and MultiHop-RAG use the SAME judging machinery — one
     LLM call returns `{score, hallucination, reason}` so the two judgements
     stay internally consistent (score=1.0 ⇒ hallucination=0.0; honest abstain
-    ⇒ both 0). Only the prompt and the no-client heuristic differ per dataset,
-    so those are passed in. Returns the dataset-agnostic judge fields; callers
-    append their own evidence/retrieval metrics.
+    ⇒ both 0). When the judge produces no usable score the row is marked
+    UNJUDGED_SCORE (-1), never silently 0. Returns the dataset-agnostic judge
+    fields; callers append their own evidence/retrieval metrics.
     """
     judge_model, judge_payload = await _call_judge_llm(judge_prompt, vllm_client)
-    return _resolve_judge_fields(
-        judge_payload, response, judge_model, heuristic_fn(), has_client=bool(vllm_client)
-    )
+    return _resolve_judge_fields(judge_payload, response, judge_model)
 
 
 async def _call_judge_llm(judge_prompt: str, vllm_client) -> tuple[str, Optional[dict]]:
@@ -261,14 +264,13 @@ def _resolve_judge_fields(
     judge_payload: Optional[dict],
     response: str,
     judge_model: str,
-    heuristic: tuple[float, str],
-    has_client: bool = True,
 ) -> dict:
     """Turn a judge payload (sync or batch) into the judge/hallucination fields.
 
-    Pure / no I/O so both the synchronous and OpenAI-Batch paths resolve scores
-    identically. `heuristic` is the precomputed (score, reason) fallback used
-    when the payload has no usable score.
+    Pure / no I/O so the synchronous and OpenAI-Batch paths resolve identically.
+    When the payload carries no usable score (judge failed, or batch not yet
+    resolved) the row is marked UNJUDGED_SCORE (-1) — never silently 0 — so
+    aggregation excludes it rather than counting it as a wrong answer.
     """
     parsed_score = _parse_unit_score((judge_payload or {}).get("score"))
     parsed_hallu = _parse_unit_score((judge_payload or {}).get("hallucination"))
@@ -277,13 +279,12 @@ def _resolve_judge_fields(
         judge_score = parsed_score
         judge_reason = str((judge_payload or {}).get("reason", "")) or "combined_judge"
     else:
-        judge_score, judge_reason = heuristic
-        if not has_client:
-            judge_reason = "fallback_heuristic_without_judge_client"
+        judge_score = UNJUDGED_SCORE
+        judge_reason = "unjudged_no_score"
 
-    # Resolve hallucination from the same combined call when possible. Apply
-    # the honest-abstain rule deterministically (so the LLM cannot label a
-    # genuine abstention as a hallucination).
+    # Honest-abstain rule is deterministic. Otherwise hallucination tracks the
+    # judge: explicit field, else derived from a real score; an unjudged row
+    # stays unjudged (never fabricated as a hallucination).
     if _is_insufficient_text(response):
         hallucination = 0.0
         hallucination_reason = "non_answer_insufficient"
@@ -296,10 +297,14 @@ def _resolve_judge_fields(
         hallucination = 1.0 if parsed_hallu >= 0.5 else 0.0
         hallucination_reason = str((judge_payload or {}).get("reason", "")) or "combined_judge"
         hallucination_source = "combined_judge"
-    else:
+    elif judge_score >= 0.0:
         hallucination = 1.0 if judge_score < 1.0 else 0.0
-        hallucination_reason = "fallback_llm_judge_due_invalid_payload"
+        hallucination_reason = "derived_from_judge_score"
         hallucination_source = "llm_judge_fallback"
+    else:
+        hallucination = UNJUDGED_SCORE
+        hallucination_reason = "unjudged_no_score"
+        hallucination_source = "unjudged"
 
     return {
         "llm_judge_score": judge_score,
@@ -315,29 +320,25 @@ async def _judge_or_defer(
     judge_prompt: str,
     response: str,
     vllm_client,
-    heuristic_fn,
     batch_collector=None,
     custom_id=None,
 ) -> dict:
     """Run the judge synchronously, or — when a batch collector is supplied —
-    register the prompt and return a tentative (heuristic) result tagged with
+    register the prompt and return an UNJUDGED (-1) placeholder tagged with
     `_deferred_judge` so the benchmark can patch in the real score after the
     OpenAI batch completes.
     """
     if batch_collector is not None and custom_id is not None:
         batch_collector.register(str(custom_id), judge_prompt)
-        heuristic = heuristic_fn()
-        judge = _resolve_judge_fields(None, response, RAGConfig.EVAL_MODEL, heuristic, has_client=True)
+        judge = _resolve_judge_fields(None, response, RAGConfig.EVAL_MODEL)  # tentative: unjudged
         judge["_deferred_judge"] = {
             "custom_id": str(custom_id),
             "prompt": judge_prompt,
             "response": response,
-            "heuristic_score": heuristic[0],
-            "heuristic_reason": heuristic[1],
             "judge_model": RAGConfig.EVAL_MODEL,
         }
         return judge
-    return await _run_combined_judge(judge_prompt, response, vllm_client, heuristic_fn)
+    return await _run_combined_judge(judge_prompt, response, vllm_client)
 
 
 async def evaluate_financebench_response(
@@ -356,22 +357,13 @@ async def evaluate_financebench_response(
     Score and hallucination come from a SINGLE LLM call (see
     `_run_combined_judge`); evidence match is doc/page level.
     """
-    def _heuristic_judge() -> tuple[float, str]:
-        fallback_acc = calculate_financebench_accuracy(response, ground_truth)
-        score = max(
-            fallback_acc["exact_match"],
-            fallback_acc["numeric_match"],
-            fallback_acc["contains_match"],
-        )
-        return score, "fallback_heuristic: exact/numeric/contains max"
-
     judge_prompt = FINANCEBENCH_JUDGE_PROMPT.format(
         query=query,
         ground_truth=ground_truth,
         response=response,
     )
     judge = await _judge_or_defer(
-        judge_prompt, response, vllm_client, _heuristic_judge, batch_collector, custom_id
+        judge_prompt, response, vllm_client, batch_collector, custom_id
     )
 
     # Evidence Match (Doc & Page). Supports dict/list/str source types.
@@ -508,17 +500,9 @@ async def evaluate_multihoprag_response(
     """MultiHop-RAG evaluation: type-aware LLM judge + fact-level retrieval
     ranking metrics (MRR/MAP/Hits@K), per Tang & Yang (2024). Judging shares
     `_run_combined_judge` with FinanceBench but uses MULTIHOPRAG_JUDGE_PROMPT
-    (news multi-hop framing, no numeric-unit reconciliation) and a
-    contains/exact text heuristic instead of FinanceBench's numeric one.
+    (news multi-hop framing, no numeric-unit reconciliation). Unscored rows are
+    marked UNJUDGED (-1), not 0.
     """
-    def _heuristic_judge() -> tuple[float, str]:
-        pred = normalize_answer(response)
-        gt = normalize_answer(ground_truth)
-        if not gt:
-            return 0.0, "fallback_heuristic: empty_ground_truth"
-        score = 1.0 if (pred == gt or gt in pred) else 0.0
-        return score, "fallback_heuristic: exact/contains"
-
     judge_prompt = MULTIHOPRAG_JUDGE_PROMPT.format(
         question_type=question_type or "unknown",
         query=query,
@@ -526,7 +510,7 @@ async def evaluate_multihoprag_response(
         response=response,
     )
     judge = await _judge_or_defer(
-        judge_prompt, response, vllm_client, _heuristic_judge, batch_collector, custom_id
+        judge_prompt, response, vllm_client, batch_collector, custom_id
     )
 
     ranking = calculate_retrieval_ranking_metrics(retrieved_sources, evidence_facts or [])

@@ -83,27 +83,28 @@ async def test_batch_judge_empty_is_noop():
     assert await judge.run() == {}
 
 
-def test_resolve_judge_fields_matches_payload_then_heuristic():
-    # Payload with a usable score wins over the heuristic.
+def test_resolve_judge_fields_payload_then_unjudged():
+    # Payload with a usable score is used as-is.
     fields = _resolve_judge_fields(
         {"score": 1.0, "hallucination": 0.0, "reason": "correct"},
         response="The answer is 42.",
         judge_model="gpt-test",
-        heuristic=(0.0, "heuristic"),
     )
     assert fields["llm_judge_score"] == 1.0
     assert fields["hallucination"] == 0.0
     assert fields["hallucination_model"] == "gpt-test"
 
-    # No payload (batch miss) → fall back to the precomputed heuristic.
+    # No payload (judge failed, or batch not yet resolved) → UNJUDGED (-1),
+    # never silently 0; hallucination is unjudged too (not fabricated).
+    from utils.metrics import UNJUDGED_SCORE
     fb = _resolve_judge_fields(
         None,
         response="Some substantive answer.",
         judge_model="gpt-test",
-        heuristic=(0.5, "heuristic_reason"),
     )
-    assert fb["llm_judge_score"] == 0.5
-    assert fb["llm_judge_reason"] == "heuristic_reason"
+    assert fb["llm_judge_score"] == UNJUDGED_SCORE == -1.0
+    assert fb["llm_judge_reason"] == "unjudged_no_score"
+    assert fb["hallucination"] == UNJUDGED_SCORE
 
 
 def test_resolve_judge_fields_abstain_is_not_hallucination():
@@ -111,7 +112,6 @@ def test_resolve_judge_fields_abstain_is_not_hallucination():
         {"score": 0.0, "hallucination": 1.0, "reason": "wrong"},
         response="Insufficient evidence to answer.",
         judge_model="gpt-test",
-        heuristic=(0.0, "heuristic"),
     )
     # Honest abstain is resolved deterministically to non-hallucination.
     assert fields["hallucination"] == 0.0

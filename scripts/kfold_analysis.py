@@ -76,18 +76,24 @@ def _fold_stats(rows: list[dict], k: int, seed: int) -> dict[str, Any]:
     folds = _fold_indices(len(rows), k, seed)
     out: dict[str, Any] = {}
     for m in metrics:
+        # Per-fold mean over JUDGED rows only: exclude the UNJUDGED sentinel
+        # (-1) for llm_judge_score / hallucination / answer_attempted. Every
+        # real metric is >= 0, so `>= 0` drops only sentinels.
         fold_means = [
-            _mean([float(rows[i][m]) for i in f if isinstance(rows[i].get(m), (int, float)) and not isinstance(rows[i].get(m), bool)])
+            _mean([float(rows[i][m]) for i in f
+                   if isinstance(rows[i].get(m), (int, float)) and not isinstance(rows[i].get(m), bool) and rows[i][m] >= 0])
             for f in folds
         ]
         out[m] = {**_agg(fold_means), "fold_means": fold_means}
-    # 3-way label rates per fold (FinanceBench taxonomy; applies to MultiHop too)
+    # 3-way label rates per fold (FinanceBench taxonomy; applies to MultiHop too).
+    # Denominator = judged rows in the fold (label in _LABELS); "Unjudged" excluded.
     if any("financebench_label" in r for r in rows):
         for label in _LABELS:
-            fold_rates = [
-                (sum(1 for i in f if rows[i].get("financebench_label") == label) / len(f)) if f else 0.0
-                for f in folds
-            ]
+            fold_rates = []
+            for f in folds:
+                judged = [i for i in f if rows[i].get("financebench_label") in _LABELS]
+                hits = sum(1 for i in judged if rows[i].get("financebench_label") == label)
+                fold_rates.append(hits / len(judged) if judged else 0.0)
             key = "rate_" + label.lower().replace(" ", "_")
             out[key] = {**_agg(fold_rates), "fold_means": fold_rates}
     return out

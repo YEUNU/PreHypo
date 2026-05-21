@@ -70,6 +70,15 @@ def _apply_judge_label(result_item: dict[str, Any], is_financebench: bool, is_mu
     final_answer = _extract_final_answer(answer_text).lower()
     abstained = is_abstain(final_answer)
     judge_score = _safe_float(result_item.get("llm_judge_score", 0.0), 0.0)
+    result_item["final_answer_extracted"] = final_answer[:300]
+
+    # Unjudged row (score < 0, e.g. batch not yet resolved or judge failed):
+    # don't fabricate a label/attempt — leave it out of the 3-way tally.
+    if judge_score < 0.0:
+        result_item["answer_attempted"] = -1.0
+        result_item["financebench_label"] = "Unjudged"
+        return
+
     # Judge override: a score >= 0.5 means a usable answer regardless of phrasing.
     if has_error:
         answer_attempted = 0.0
@@ -78,7 +87,6 @@ def _apply_judge_label(result_item: dict[str, Any], is_financebench: bool, is_mu
     else:
         answer_attempted = 0.0 if abstained else 1.0
     result_item["answer_attempted"] = answer_attempted
-    result_item["final_answer_extracted"] = final_answer[:300]
     if not isinstance(result_item.get("hallucination"), (int, float)):
         result_item["hallucination"] = 1.0 if (answer_attempted > 0.0 and judge_score < 1.0) else 0.0
     result_item["financebench_label"] = financebench_label(judge_score, final_answer)
@@ -245,16 +253,24 @@ async def run_benchmark(
                 "rolling_summary": RAGConfig.ABLATION_ROLLING_SUMMARY,
             },
         }
-        denom = len(results) or 1
+        # Average over judged rows only: exclude the UNJUDGED sentinel (-1)
+        # (llm_judge_score / hallucination / answer_attempted when unscored).
+        # Every real metric is in [0, 1] (or latency >= 0), so `>= 0` drops only
+        # sentinels. avg_<key> reflects the rows that actually have that metric.
+        def _avg(rows: list[dict], key: str) -> float:
+            vals = [r[key] for r in rows
+                    if isinstance(r.get(key), (int, float)) and not isinstance(r.get(key), bool) and r[key] >= 0]
+            return sum(vals) / len(vals) if vals else 0.0
+
         for key in ref.keys():
             if isinstance(ref.get(key), (int, float)) and not isinstance(ref.get(key), bool):
-                s[f"avg_{key}"] = sum(r[key] for r in results) / denom
+                s[f"avg_{key}"] = _avg(results, key)
         cat_summaries = {}
         for cat, cat_list in category_results.items():
             cat_sum: dict[str, Any] = {"count": len(cat_list)}
             for key in ref.keys():
                 if isinstance(ref.get(key), (int, float)) and not isinstance(ref.get(key), bool):
-                    cat_sum[f"avg_{key}"] = sum(r[key] for r in cat_list) / (len(cat_list) or 1)
+                    cat_sum[f"avg_{key}"] = _avg(cat_list, key)
             cat_summaries[cat] = cat_sum
         s["category_summaries"] = cat_summaries
 
@@ -264,7 +280,8 @@ async def run_benchmark(
                 label = r.get("financebench_label")
                 if label in fb_counts:
                     fb_counts[label] += 1
-            total = len(results) or 1
+            # Rate denominator = judged rows only (exclude "Unjudged").
+            total = sum(fb_counts.values()) or 1
             s["financebench_correct_count"] = fb_counts["Correct Answer"]
             s["financebench_incorrect_count"] = fb_counts["Incorrect Answer"]
             s["financebench_refusal_count"] = fb_counts["Refusal"]
@@ -448,8 +465,6 @@ async def run_benchmark(
                 payload,
                 deferred["response"],
                 deferred["judge_model"],
-                (deferred["heuristic_score"], deferred["heuristic_reason"]),
-                has_client=True,
             )
             r.update(judge_fields)
             _apply_judge_label(r, is_financebench, is_multihoprag)
