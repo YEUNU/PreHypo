@@ -35,7 +35,14 @@ class HopEdgeMixin:
         # answering the actual question. We restrict candidates to the same
         # company prefix; same-source is still excluded to keep edges
         # cross-document (paper §3.1.4 multi-hop discovery).
-        src_company = hop_src.get("company") or ""
+        #
+        # For news/multi-hop corpora (RAGConfig.COMPANY_ANCHORING == False) the
+        # "company" derived from a news filename is just its leading token
+        # (e.g. "THE", "2023", "NFL"), so this filter would confine HOP edges to
+        # articles that coincidentally share a first token — collapsing the
+        # multi-hop graph. Disable it there; same-source exclusion still keeps
+        # edges cross-document.
+        src_company = (hop_src.get("company") or "") if RAGConfig.COMPANY_ANCHORING else ""
 
         query = """
             CALL db.index.vector.queryNodes($index, 15, $embed)

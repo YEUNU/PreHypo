@@ -191,7 +191,8 @@ class TraversalMixin:
                     MATCH (src:{self.chunk_label} {{id: src_id}})-{edge_pattern}->(related:{self.chunk_label})
                     WHERE NOT related.id IN $visited_ids
                     RETURN DISTINCT related.id as id, related.title as title, related.sent_id as sent_id,
-                                    related.page as page, related.text as text, related.source as source
+                                    related.page as page, related.text as text, related.source as source,
+                                    related.published_at as published_at, related.pub_source as pub_source
                     LIMIT $limit
                 """
                 result = await session.run(query, {  # type: ignore
@@ -297,7 +298,8 @@ class TraversalMixin:
                   AND node.source <> $src_source
                   AND NOT node.id IN $visited
                 RETURN node.id as id, node.title as title, node.sent_id as sent_id,
-                       node.page as page, node.text as text, node.source as source, score
+                       node.page as page, node.text as text, node.source as source,
+                       node.published_at as published_at, node.pub_source as pub_source, score
             """
             try:
                 rows = await self.retry_query(

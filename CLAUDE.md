@@ -186,6 +186,91 @@ question_type: comparison 856 / inference 816 / temporal 583 / null 301).
   `utils/metrics.py` (`_resolve_judge_fields` shared by both paths),
   `cli/benchmark.py` (phase-2 + `reconcile_pending_judges`).
 
+### MultiHop-RAG domain tuning (company-anchoring + top_k + news metadata) — 2026-05-22
+
+The original pipeline was FinanceBench-tuned and collapsed on MultiHop-RAG
+(news, cross-document). Four domain-gated knobs fixed it; **all preserve the
+FinanceBench path byte-for-byte** (gated on `RAGConfig.DOMAIN`/`COMPANY_ANCHORING`):
+
+- **Company-anchoring gate** (`core/config.py` `COMPANY_ANCHORING`, default
+  `DOMAIN=="financial"`, env `RAG_COMPANY_ANCHORING`). When OFF (news):
+  `_extract_company_keys` returns `set()` (neutralizes the strict company
+  filter in `rerank.py`/`traversal.py` + mismatch penalty + company boost), and
+  `hop_edges.py` drops the same-company HOP filter. This was THE multihoprag
+  fix: HOP edges 638 → ~5k, Judge 0.59 → 0.70, MRR 0.37 → 0.49. The synthesis
+  prompts were already domain-branched (`utils/prompts/indexing.py`) and were
+  NOT the problem. See memory `company-anchoring-domain-gate.md`.
+- **`DEFAULT_TOP_K`** is now domain-aware: **news=12, financial=8** (env
+  `RAG_DEFAULT_TOP_K` overrides). Metrics slice the returned ranked list `[:k]`
+  and `run_workflow` returned only top-8, so Hits@10 was capped at Hits@8.
+  A/B (sample200): top_k 8→12 lifted Hits@10 +3.5pp, DocRecall +5.9pp, **and
+  Judge +5pp (0.70→0.75)** with negligible hallucination (+1pp) — more evidence
+  was a net win, not context dilution.
+- **News metadata in synthesis context** (`text_utils._build_context_from_nodes`,
+  gated `DOMAIN=="news"`). The corpus txt header carries `Published:`/`Source:`
+  but ingestion dropped them, so chunks reached synthesis with title+body only.
+  Temporal questions ("published Oct 6 vs Oct 7…") then had no date anchor →
+  the model rationally abstained (15/24 temporal failures were abstentions, with
+  retrieval already fine). Fix: store `published_at`/`pub_source` on Chunk +
+  Document (parsed in `cli/index.py:_parse_news_header`, written by
+  `graph_writer.py`, surfaced via the hybrid/traversal RETURN clauses), and
+  inject `Source: … , Published: …` into each context block. THE temporal fix:
+  temporal Judge 0.52→0.68, answer_attempted 0.70→0.92. NOT a prompt nudge — it
+  gives real date evidence (contrast the reverted "be decisive" nudge below).
+- **Comparison query decomposition** (`_NEWS_QUERY_REWRITE_PROMPT`, gated via
+  `DOMAIN=="news"` prompt select). The news rewrite previously forced every
+  variant to keep ALL entity tokens, so "A vs B" stayed a compound query and B's
+  evidence never surfaced alone. Now multi-subject queries DECOMPOSE into one
+  single-subject variant per entity/source/event — reusing the existing
+  `query_variants`/hybrid-RRF machinery (NOT a new sub-question module, so the
+  paper core is untouched). comparison Judge 0.54→0.66 (Hits@4 flat: the gain is
+  source-attribution + both sides reaching the top-12 context, not fact-@4).
+
+**Re-index for these fixes:** company-anchoring touches HOP-edge construction,
+so a **HOP-only rebuild** suffices (chunks/Q±/embeddings unchanged). For a fully
+reproducible from-scratch reindex, scoped-delete only `PR_<tag>_{Chunk,Document}`
+(NEVER `--clear-graph`) and set **`RAG_CHUNK_CACHE=off`** — otherwise the on-disk
+chunk cache (`data/index_cache/v3/<tag>/`, see `chunking.py`) replays prior
+Q±/summaries (cache HIT log line; 0 gen `chat/completions` calls = cache used).
+top_k change needs NO reindex (benchmark only). **News metadata** also needs no
+full reindex: backfill `published_at`/`pub_source` onto existing chunks+docs by
+matching `c.source = <txt filename>` against the corpus txt headers (a fresh
+index populates them automatically via `cli/index.py`).
+
+**Failure decomposition (sample200, n=200):** retrieval is NOT the bottleneck —
+failing buckets have the same evidence recall as correct ones; the two weak
+buckets were **temporal** (over-abstention: no date anchor in context) and
+**comparison** (one compared side missing from top ranks). Both are now
+addressed by the news-metadata + decomposition knobs above (Judge 0.75→0.82).
+A *generic* synthesis-prompt nudge (decisive Yes/No + source-is-framing) was
+tried earlier and **reverted** — it traded abstentions for wrong answers (Judge
+flat, hallucination ↑). The lesson: give the model real evidence (dates, both
+sides) rather than bullying it to commit. MS-GraphRAG synthesis uses the
+official graphrag package's local/global search (not the shared prompt), so it
+never abstains.
+
+### Cross-strategy results state (multihoprag sample200)
+
+- Valid PreHypo run (top_k=12 + news-metadata + decomposition):
+  `data/results/20260522_094923/prehypo/`. Baselines (naive/hoprag/ms_graphrag):
+  `data/results/mhr_s200_20260521_153557/`. Obsolete prehypo runs (top_k=8,
+  prompt-A/B, smoke, old anchored, and the pre-metadata 0.75 run) were deleted.
+- **Headline (n=200)**: PreHypo Judge **0.82**, MRR@10 0.50, MAP@10 0.31,
+  DocRecall 0.63, ~7.8s — vs MS-GraphRAG Judge 0.70 / naive 0.65 / hoprag 0.635.
+- **Query-level paired bootstrap (N=10k, seed 42)** resolves the old caveat —
+  PreHypo's **Judge lead is now statistically separated from EVERY baseline**,
+  incl. MS-GraphRAG: Δ +0.12 [+0.06, +0.19] (CI excludes 0). DocRecall sig vs all
+  (+0.31 vs MS-GraphRAG). MRR/MAP/Hits sig vs naive+hoprag; vs MS-GraphRAG they
+  overlap 0 (tie) — MS-GraphRAG's small Hits@4/@10 edge is NOT significant.
+  Hallucination: no sig difference vs any. Run via
+  `scripts/mhr_paired_bootstrap.py` → stats (`mhr_paired_bootstrap.{json,csv}` in
+  the run dir). 5-fold (overlapping, weaker) still available via
+  `scripts/kfold_analysis.py --results … --k 5 --seed 42`.
+- **Headline figure**: `scripts/mhr_strategy_bars.py` → `fig/mhr_strategy_bars.png`
+  (cross-strategy bars, 5-fold mean±std, PreHypo highlighted, house style of
+  `fig_direction_split.png`). NB its retrieval bars are gold-only (non-null)
+  MRR/Hits, so they read higher than the null-inclusive `.summary.json` values.
+
 ## Neo4j data layout & integrity checks
 
 Corpus-tag prefixes labels so datasets coexist: `PR_<tag>_*` (prehypo),

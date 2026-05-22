@@ -51,7 +51,8 @@ class HybridSearchMixin:
                 YIELD node, score
                 {('WHERE ' + vector_filter.strip()) if vector_filter.strip() else ''}
                 RETURN node.id as id, node.title as title, node.sent_id as sent_id, node.page as page,
-                       node.text as text, score, 'vector' as type, $channel as channel
+                       node.text as text, node.published_at as published_at, node.pub_source as pub_source,
+                       score, 'vector' as type, $channel as channel
             """
             vec_res = await session.run(query_vec, {  # type: ignore
                 "limit": RAGConfig.VECTOR_SEARCH_LIMIT,
@@ -67,7 +68,8 @@ class HybridSearchMixin:
                 YIELD node, score
                 {('WHERE ' + text_filter.strip()) if text_filter.strip() else ''}
                 RETURN node.id as id, node.title as title, node.sent_id as sent_id, node.page as page,
-                       node.text as text, score, 'text' as type, $channel as channel
+                       node.text as text, node.published_at as published_at, node.pub_source as pub_source,
+                       score, 'text' as type, $channel as channel
             """
             ft_res = await session.run(query_ft, {  # type: ignore
                 "query": fulltext_query,

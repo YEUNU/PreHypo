@@ -126,6 +126,15 @@ class TextUtilsMixin:
         return bool(entity_lower and entity_lower in text_lower)
 
     def _extract_company_keys(self, query: str) -> set[str]:
+        # Company-anchoring is FinanceBench-specific (single-company queries).
+        # For news/multi-hop corpora (RAGConfig.COMPANY_ANCHORING == False) the
+        # spurious keys this extracts from possessives ("Trump's"), of/for
+        # phrases, and uppercase tokens (BBC, CNN, US, TV) would trigger the
+        # strict company filter and prune cross-document gold evidence. Returning
+        # an empty set neutralizes the strict filter, mismatch penalty, and
+        # company boost in one place (all read query_meta["company_keys"]).
+        if not RAGConfig.COMPANY_ANCHORING:
+            return set()
         q = query or ""
         q_lower = q.lower()
         company_candidates: list[str] = []
@@ -314,6 +323,24 @@ class TextUtilsMixin:
 
     @staticmethod
     def _build_context_from_nodes(nodes: list[dict[str, Any]]) -> str:
+        # News corpora (MultiHop-RAG) carry per-article publication date + source
+        # that temporal/comparison questions hinge on; the financial path keeps
+        # the original `[[title, Page, Chunk]]` header byte-for-byte.
+        if RAGConfig.DOMAIN == "news":
+            blocks = []
+            for node in nodes:
+                meta = []
+                src = str(node.get("pub_source") or "").strip()
+                pub = str(node.get("published_at") or "").strip()
+                if src:
+                    meta.append(f"Source: {src}")
+                if pub:
+                    meta.append(f"Published: {pub}")
+                meta_str = (", " + ", ".join(meta)) if meta else ""
+                blocks.append(
+                    f"[[{node['title']}{meta_str}, Chunk {node['sent_id']}]]\n{node['text']}"
+                )
+            return "\n\n".join(blocks)
         return "\n\n".join([
             f"[[{node['title']}, Page {node.get('page', 0)}, Chunk {node['sent_id']}]]\n{node['text']}"
             for node in nodes

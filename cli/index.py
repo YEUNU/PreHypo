@@ -24,6 +24,27 @@ _PARSE_MP_CTX = _mp.get_context("spawn")
 logger = logging.getLogger("PreHypo")
 
 
+def _parse_news_header(content: str) -> tuple[Optional[str], Optional[str]]:
+    """Extract `Published:`/`Source:` from a MultiHop-RAG corpus txt header.
+
+    `data/prepare_multihoprag.py` writes a `Title:/Source:/Category:/Published:`
+    block at the top of each article. The publication date and publisher are
+    doc-level metadata that temporal/comparison questions hinge on, so they are
+    surfaced into the retrieval context (see graph_writer / text_utils). Returns
+    (None, None) when the header is absent (e.g., financial filings).
+    """
+    published_at: Optional[str] = None
+    pub_source: Optional[str] = None
+    for line in content.split("\n", 8)[:8]:
+        if line.startswith("Published: "):
+            published_at = line[len("Published: "):].strip() or None
+        elif line.startswith("Source: "):
+            pub_source = line[len("Source: "):].strip() or None
+        elif line and not line[0].isupper() and ":" not in line[:12]:
+            break
+    return published_at, pub_source
+
+
 async def run_indexing(
     dataset_path: str,
     strategy: str,
@@ -186,7 +207,14 @@ async def run_indexing(
                     knowledge = await engine.extract_knowledge(
                         content, prepared_pages=prepared_pages
                     )
-                    doc_id = await engine.create_document_node(filename, {"title": knowledge["title"]})
+                    doc_meta = {"title": knowledge["title"]}
+                    if RAGConfig.DOMAIN == "news":
+                        published_at, pub_source = _parse_news_header(content)
+                        knowledge["published_at"] = published_at
+                        knowledge["pub_source"] = pub_source
+                        doc_meta["published_at"] = published_at
+                        doc_meta["pub_source"] = pub_source
+                    doc_id = await engine.create_document_node(filename, doc_meta)
                     await engine.build_graph(knowledge, source=filename, document_filename=doc_id)
                     async with progress["lock"]:
                         processed_docs.append(doc_id)

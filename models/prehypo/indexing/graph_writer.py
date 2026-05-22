@@ -163,13 +163,16 @@ class GraphWriterMixin:
     async def create_document_node(self, filename: str, metadata: dict[str, Any]) -> str:
         query = f"""
             MERGE (d:{self.doc_label} {{filename: $filename}})
-            SET d.corpus = $corpus, d.title = $title, d.updated_at = timestamp()
+            SET d.corpus = $corpus, d.title = $title, d.updated_at = timestamp(),
+                d.published_at = $published_at, d.pub_source = $pub_source
             RETURN d.filename as id
         """
         async with self._batch_lock:
             results = await self.retry_query(query, {
                 "filename": filename,
                 "title": metadata.get("title", filename),
+                "published_at": metadata.get("published_at") or None,
+                "pub_source": metadata.get("pub_source") or None,
                 "corpus": self.corpus_tag
             })
         return results[0]["id"] if results else filename
@@ -210,6 +213,12 @@ class GraphWriterMixin:
         chunks = knowledge.get("chunks", [])
         if not chunks:
             return
+
+        # Doc-level news metadata (published_at/source) is denormalized onto each
+        # chunk so the retrieval RETURN clauses can surface it in the synthesis
+        # context (temporal/comparison reasoning). Empty for financial filings.
+        doc_published_at = knowledge.get("published_at") or None
+        doc_pub_source = knowledge.get("pub_source") or None
 
         body_texts = [str(chunk.get("text", "") or "") for chunk in chunks]
         q_minus_texts = [
@@ -275,6 +284,8 @@ class GraphWriterMixin:
                 "source": source,
                 "company": _company_from_source(source),
                 "title": chunk["title"],
+                "published_at": doc_published_at,
+                "pub_source": doc_pub_source,
                 "sent_id": chunk["sent_id"],
                 "page": chunk.get("page", 0),
                 "embedding": primary_embedding,
@@ -320,6 +331,7 @@ class GraphWriterMixin:
                 MERGE (c:{self.chunk_label} {{id: item.id}})
                 SET c.text = item.text, c.source = item.source, c.company = item.company,
                     c.title = item.title,
+                    c.published_at = item.published_at, c.pub_source = item.pub_source,
                     c.sent_id = item.sent_id, c.page = item.page, c.corpus = $corpus,
                     c.embedding = item.embedding,
                     c.body_embedding = item.body_embedding, c.q_minus_embedding = item.q_minus_embedding,

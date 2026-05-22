@@ -24,18 +24,32 @@ logger = logging.getLogger(__name__)
 
 
 def _run_coro_sync(coro):
-    """Run async coroutines from synchronous official HopRAG hooks."""
+    """Run async coroutines from synchronous official HopRAG hooks.
+
+    A hard timeout guards against a wedged HTTP connection hanging the whole
+    benchmark forever (the loop-bound httpx read timeout does not fire when a
+    pooled connection is reused across event loops). On timeout the coroutine
+    is cancelled and TimeoutError propagates to the caller's try/except.
+    """
+    from core.config import RAGConfig
+
+    base = RAGConfig.LLM_REQUEST_TIMEOUT or 300
+    hard_timeout = base + 60
+
+    async def _guarded():
+        return await asyncio.wait_for(coro, timeout=hard_timeout)
+
     try:
         asyncio.get_running_loop()
     except RuntimeError:
-        return asyncio.run(coro)
+        return asyncio.run(_guarded())
 
     holder: Dict[str, Any] = {}
     errors: Dict[str, BaseException] = {}
 
     def _runner():
         try:
-            holder["value"] = asyncio.run(coro)
+            holder["value"] = asyncio.run(_guarded())
         except BaseException as e:  # pragma: no cover - defensive fallback
             errors["error"] = e
 
@@ -230,10 +244,18 @@ class HopRAGAdapter:
             messages = chat if isinstance(chat, list) else [{"role": "user", "content": str(chat)}]
             _ = model, max_tokens  # keep official signature compatibility
             if not return_json:
-                response = _run_coro_sync(self.llm.generate_response(messages, temperature=0.0))
+                try:
+                    response = _run_coro_sync(self.llm.generate_response(messages, temperature=0.0))
+                except Exception as e:  # incl. TimeoutError from the sync-bridge guard
+                    logger.warning("hoprag _get_chat_completion (text) failed: %s", e)
+                    response = ""
                 return response, messages
 
-            generated = _run_coro_sync(self.llm.generate_json(messages, temperature=0.0))
+            try:
+                generated = _run_coro_sync(self.llm.generate_json(messages, temperature=0.0))
+            except Exception as e:  # incl. TimeoutError from the sync-bridge guard
+                logger.warning("hoprag _get_chat_completion (json) failed: %s", e)
+                generated = None
             payload = generated if isinstance(generated, dict) else {}
 
             values = [payload.get(k, "") for k in (keys or [])]

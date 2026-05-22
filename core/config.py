@@ -15,6 +15,21 @@ class RAGConfig:
         or _DOMAIN_BY_DATASET.get(DATASET, "financial")
     )
 
+    # Company-anchoring: FinanceBench queries are anchored to a single company,
+    # so cross-company chunks and HOP edges are pure retrieval noise — the
+    # strict company filter (rerank/traversal) and same-company HOP-edge filter
+    # (indexing) both depend on this assumption. For news/multi-hop corpora the
+    # gold evidence is spread ACROSS documents whose titles rarely echo the
+    # query's named entities, so company-anchoring prunes exactly the
+    # cross-document evidence the task needs. Default: on for financial only.
+    # RAG_COMPANY_ANCHORING (true/false) overrides for ablation.
+    _COMPANY_ANCHORING_ENV = os.environ.get("RAG_COMPANY_ANCHORING", "").strip().lower()
+    COMPANY_ANCHORING = (
+        _COMPANY_ANCHORING_ENV in ("1", "true", "yes", "on")
+        if _COMPANY_ANCHORING_ENV
+        else DOMAIN == "financial"
+    )
+
     # --- Infrastructure (Actual ports identified) ---
     VLLM_URL = os.environ.get("VLLM_URL", "http://localhost:28000/v1")
     # Optional second generation endpoint for round-robin load balancing.
@@ -118,7 +133,12 @@ class RAGConfig:
     HOP_LINK_LIMIT = int(os.environ.get("RAG_HOP_LINK_LIMIT", "5"))
     CONTEXT_FETCH_LIMIT = int(os.environ.get("RAG_CONTEXT_FETCH_LIMIT", "10"))
     GRAPH_SEARCH_LIMIT = int(os.environ.get("RAG_GRAPH_SEARCH_LIMIT", "10"))
-    DEFAULT_TOP_K = int(os.environ.get("RAG_DEFAULT_TOP_K", "8"))
+    # Retrieval/synthesis depth. News/multi-hop (MultiHop-RAG) needs more chunks
+    # in the returned top-k so all 2-4 evidence pieces land inside the @10 metric
+    # window and the synthesis context (validated A/B: top_k 8->12 lifted Hits@10
+    # +4.7pp and Judge +5pp). FinanceBench stays at 8 (paper baseline). Env
+    # RAG_DEFAULT_TOP_K overrides either.
+    DEFAULT_TOP_K = int(os.environ.get("RAG_DEFAULT_TOP_K", "12" if DOMAIN == "news" else "8"))
     FULLTEXT_ANALYZER = os.environ.get("NEO4J_FULLTEXT_ANALYZER", "english")
     RECREATE_TEXT_INDEX = os.environ.get("RAG_RECREATE_TEXT_INDEX", "False").lower() == "true"
 

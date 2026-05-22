@@ -655,10 +655,25 @@ class VLLMClient:
                 await asyncio.sleep(delay)
 
     def _get_cached_client(self, url: str) -> AsyncOpenAI:
-        if url not in self._client_cache:
+        # Key the cache by the *running event loop* as well as the url. httpx's
+        # connection pool binds to the loop that first used it, so a client
+        # cached on one loop and reused on another (hoprag runs each judge call
+        # in a ThreadPoolExecutor worker that spins up a fresh asyncio.run loop)
+        # deadlocks forever in select() — the loop-bound read timeout never
+        # fires either. Per-loop clients keep prehypo/naive (single main loop)
+        # unchanged while isolating hoprag's multi-loop path.
+        key = (url, self._running_loop_id())
+        if key not in self._client_cache:
             timeout = httpx.Timeout(self._request_timeout, connect=60.0)
-            self._client_cache[url] = AsyncOpenAI(base_url=url, api_key=self.api_key, timeout=timeout)
-        return self._client_cache[url]
+            self._client_cache[key] = AsyncOpenAI(base_url=url, api_key=self.api_key, timeout=timeout)
+        return self._client_cache[key]
+
+    @staticmethod
+    def _running_loop_id() -> int:
+        try:
+            return id(asyncio.get_running_loop())
+        except RuntimeError:
+            return 0
 
     @classmethod
     def _next_gen_url(cls, urls: List[str]) -> str:

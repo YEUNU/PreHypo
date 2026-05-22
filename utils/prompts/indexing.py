@@ -96,14 +96,14 @@ Original Query: {query}
 _NEWS_QUERY_REWRITE_PROMPT = """
 Rewrite the query into precise retrieval variants for a news/article corpus.
 Rules:
-1. Generate 1-3 high-precision variants preserving original meaning.
+1. First decide whether the query compares, contrasts, or relates TWO OR MORE distinct named entities, sources, or events (signals: "A versus B", "both X and Y", "between ... and ...", "compared to", or two different articles/publishers/dates). This is the common multi-hop case.
+   - If YES (multi-subject): DECOMPOSE the query. Emit one focused single-subject variant per entity/source/event, each carrying ONLY that one subject plus any shared time/topic/relationship anchor. Each compared side must get its own variant so its evidence is retrieved independently. Do NOT also emit the original compound query as a variant.
+   - If NO (single-subject): generate 1-3 high-precision paraphrase variants preserving the original meaning, keeping all named-entity and time tokens in every variant.
 2. Detect constraint anchors from the original query: named-entity token(s) (person/organization/place), source or publisher token(s), and time token(s) (date/month/year).
-3. Every variant must include the same named-entity token(s) and time token(s) when present; if they cannot be preserved, do not emit that variant.
-4. Keep the core relationship, comparison, or event description and any named qualifiers unchanged.
-5. Preserve exact tokens for proper nouns, titles, and source/publisher names when present (e.g., The Verge, TechCrunch, BBC).
-6. When the original query references a specific source/publisher, include that source token in at least one variant. For queries that do not name a source, omit it rather than fabricating one.
-7. Use only widely-equivalent synonyms (e.g., CEO ↔ chief executive); never swap one named entity for another.
-8. Do NOT introduce another entity/date/source, unsupported assumptions, or special query syntax operators.
+3. Preserve exact tokens for proper nouns, titles, and source/publisher names when present (e.g., The Verge, TechCrunch, BBC). When the original query references a specific source/publisher or date, keep that token on the variant it belongs to; never fabricate one.
+4. Keep the core relationship, comparison, or event description and any named qualifiers unchanged within each variant.
+5. Use only widely-equivalent synonyms (e.g., CEO ↔ chief executive); never swap one named entity for another.
+6. Do NOT introduce another entity/date/source, unsupported assumptions, or special query syntax operators.
 Original Query: {query}
 """
 
